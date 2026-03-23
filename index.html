@@ -9,7 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        :root { --primary: #007bff; --success: #28a745; --water-light: #5dade2; --water-dark: #3498db; --card-bg: #ffffff; }
+        :root { --primary: #007bff; --success: #28a745; --danger: #dc3545; --water-light: #5dade2; --water-dark: #3498db; --card-bg: #ffffff; }
         body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background: #f0f4f8; padding: 10px; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #333; }
         .container { width: 100%; max-width: 480px; }
         .card { background: var(--card-bg); padding: 25px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
@@ -18,16 +18,22 @@
         .group { flex: 1; }
         label { display: block; font-size: 0.75em; font-weight: bold; margin-bottom: 5px; color: #555; }
         select, input { width: 100%; padding: 12px; border: 1.5px solid #ccc; border-radius: 12px; box-sizing: border-box; font-size: 1em; background-color: #fff; color: #000; outline: none; }
-        .main-btn { width: 100%; padding: 16px; background: linear-gradient(45deg, #007bff, #00a8ff); color: white; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1.1em; box-shadow: 0 4px 10px rgba(0,123,255,0.2); }
+        .main-btn { width: 100%; padding: 16px; background: linear-gradient(45deg, #007bff, #00a8ff); color: white; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1.1em; }
+        
         #result-area { display: none; margin-top: 25px; }
         .core-display { text-align: center; margin-bottom: 20px; background: #f8fbff; padding: 20px; border-radius: 20px; border: 2.5px solid #d1e3f8; }
         .result-amount { font-size: 3.2em; font-weight: 900; color: #004085; line-height: 1; }
-        .limit-box { font-size: 0.8em; color: #dc3545; font-weight: bold; margin-top: 5px; }
+        .limit-box { font-size: 0.8em; color: var(--danger); font-weight: bold; margin-top: 5px; transition: 0.3s; }
+        .limit-box.warning { color: #fff; background: var(--danger); padding: 4px 10px; border-radius: 10px; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        
         .hourly-target { font-size: 0.85em; color: #007bff; font-weight: bold; margin-top: 8px; display: block; }
         .progress-container { width: 100%; background-color: #e9ecef; border-radius: 10px; height: 14px; margin: 15px 0; overflow: hidden; border: 1.5px solid #ddd; }
         .progress-bar { height: 100%; background: linear-gradient(90deg, #4facfe, #00f2fe); width: 0%; transition: width 1s; }
         .status-note-card { background: #fff; padding: 15px; border-radius: 15px; border: 1.5px solid #eee; border-left: 6px solid #007bff; margin-top: 10px; font-size: 0.9em; line-height: 1.6; color: #222; min-height: 50px; }
         .status-note-card.success { border-left-color: var(--success); background-color: #f0fff4; }
+        .status-note-card.danger { border-left-color: var(--danger); background-color: #fff5f5; border-color: #ffcccc; }
+
         .cups-section { margin-top: 20px; padding: 15px; background: #fff; border-radius: 20px; border: 1.5px solid #eee; }
         .cups-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 15px; }
         .cup-item { text-align: center; cursor: pointer; }
@@ -88,14 +94,14 @@
             <div class="total-box"><div style="font-size:0.8em; color:#666; margin-bottom:5px;">今日已累計飲用</div><span class="total-val" id="currentTotal">0</span> <small>ml</small></div>
             <div class="history-wall"><span class="history-title">最近 7 日達成狀況</span><div class="history-dots" id="historyDots"></div></div>
             <div class="export-grid" id="export-ui">
-                <button class="export-btn btn-excel" onclick="exportExcel()">📊 Excel</button>
-                <button class="export-btn btn-pdf" onclick="exportPDF()">📄 PDF</button>
+                <button class="export-btn btn-excel" onclick="exportExcel()">📊 Excel (PC)</button>
+                <button class="export-btn btn-pdf" onclick="exportPDF()">📄 PDF (PC)</button>
                 <button class="export-btn btn-img" onclick="exportImage()">🖼️ 圖檔</button>
             </div>
             <span class="reset-link" id="reset-ui" onclick="clearAllData()">🗑️ 重設紀錄</span>
             <div class="watermark" id="watermark">Created by RURU-prog</div>
         </div>
-        <div class="footer-info">VERSION 6.7</div>
+        <div class="footer-info">VERSION 6.9</div>
     </div>
 </div>
 <div id="img-preview-overlay">
@@ -104,27 +110,20 @@
 </div>
 <script>
     let drinkData = []; let config = {};
-    const STORAGE_KEY = 'RURU_WATER_V6_7';
+    const STORAGE_KEY = 'RURU_WATER_V6_9';
     const HISTORY_KEY = 'RURU_WATER_HISTORY';
+    const isMobile = /Android|iPhone|iPad|iPod|Line/i.test(navigator.userAgent);
     window.onload = function() { loadSavedData(); renderHistory(); };
     function initRURU(isAutoLoad = false) {
         const gender = document.getElementById('gender').value; const ageVal = document.getElementById('age').value; const weightVal = document.getElementById('weight').value; const status = document.getElementById('status').value; const hourlyGoal = document.getElementById('hourlyGoal').value;
         const activeCupSize = hourlyGoal ? parseInt(hourlyGoal) : (parseInt(document.getElementById('cupSize').value) || 250);
         if (!gender || !ageVal || !weightVal || !status) { if(!isAutoLoad) alert("請完整填寫喔！"); return; }
         const age = parseInt(ageVal); const weight = parseFloat(weightVal);
-        let coeff = (age <= 12) ? 55 : (age >= 65 ? 30 : (gender === 'male' ? 35 : 30));
-        let target = (status === 'chronic_disease') ? 1200 : (weight * coeff) + (status === 'weight_loss' ? 500 : (status === 'high_temp' ? 800 : 0));
+        let target = (status === 'chronic_disease') ? 1200 : (weight * (age <= 12 ? 55 : (age >= 65 ? 30 : (gender === 'male' ? 35 : 30)))) + (status === 'weight_loss' ? 500 : (status === 'high_temp' ? 800 : 0));
         let limit = (status === 'chronic_disease') ? 1200 : (weight * 50) + (status === 'weight_loss' ? 500 : (status === 'high_temp' ? 800 : 0));
         config = { target, limit, activeCupSize, hourlyGoal, date: new Date().toLocaleDateString() };
-        document.getElementById('amount').innerText = Math.round(target);
-        document.getElementById('limitVal').innerText = Math.round(limit);
-        document.getElementById('hourlyDisplay').innerText = hourlyGoal ? `⏰ 每小時目標：${hourlyGoal} ml` : "";
-        document.getElementById('addCupBtn').innerText = `＋ 手動新增 ${activeCupSize}ml`;
-        if (!isAutoLoad) {
-            const cupCount = Math.ceil(target / activeCupSize);
-            const grid = document.getElementById('cupsGrid'); grid.innerHTML = ''; drinkData = [];
-            for (let i = 0; i < cupCount; i++) { createCupElement(i); }
-        }
+        document.getElementById('amount').innerText = Math.round(target); document.getElementById('limitVal').innerText = Math.round(limit); document.getElementById('hourlyDisplay').innerText = hourlyGoal ? `⏰ 每小時目標：${hourlyGoal} ml` : ""; document.getElementById('addCupBtn').innerText = `＋ 手動新增 ${activeCupSize}ml`;
+        if (!isAutoLoad) { const grid = document.getElementById('cupsGrid'); grid.innerHTML = ''; drinkData = []; for (let i = 0; i < Math.ceil(target / activeCupSize); i++) { createCupElement(i); } }
         document.getElementById('result-area').style.display = 'block'; updateUI(); saveToLocal();
     }
     function createCupElement(index, savedTime = null) {
@@ -133,77 +132,84 @@
         grid.appendChild(cup); if (!savedTime) drinkData.push({ id: index, time: null, volume: config.activeCupSize });
     }
     function toggleCup(index) {
-        const item = document.getElementById(`cup-${index}`); const timeLabel = document.getElementById(`time-${index}`); const cupData = drinkData[index];
-        if (!cupData.time) { cupData.time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); item.classList.add('done'); timeLabel.innerText = cupData.time; }
-        else { cupData.time = null; item.classList.remove('done'); timeLabel.innerText = '--:--'; }
+        const item = document.getElementById(`cup-${index}`); const tl = document.getElementById(`time-${index}`);
+        if (!drinkData[index].time) { drinkData[index].time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); item.classList.add('done'); tl.innerText = drinkData[index].time; }
+        else { drinkData[index].time = null; item.classList.remove('done'); tl.innerText = '--:--'; }
         updateUI(); saveToLocal();
     }
-    function addOneCup() { const index = drinkData.length; drinkData.push({ id: index, time: null, volume: config.activeCupSize }); createCupElement(index); updateUI(); saveToLocal(); }
+    function addOneCup() { const idx = drinkData.length; drinkData.push({ id: idx, time: null, volume: config.activeCupSize }); createCupElement(idx); updateUI(); saveToLocal(); }
     function updateUI() {
-        const total = drinkData.reduce((sum, d) => sum + (d.time ? d.volume : 0), 0); document.getElementById('currentTotal').innerText = total;
-        const percent = (total / config.target) * 100; document.getElementById('progressBar').style.width = Math.min(percent, 100) + '%';
-        if (percent >= 100 && !window.hasCelebrated) { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); window.hasCelebrated = true; updateHistory(true); }
-        else if (percent < 100) { window.hasCelebrated = false; }
-        updateSmartNote(percent);
+        const total = drinkData.reduce((sum, d) => sum + (d.time ? d.volume : 0), 0);
+        document.getElementById('progressBar').style.width = Math.min((total / config.target) * 100, 100) + '%';
+        document.getElementById('currentTotal').innerText = total;
+        
+        // --- 安全警示邏輯 ---
+        const limitBox = document.getElementById('limitBox');
+        if (total > config.limit) {
+            limitBox.classList.add('warning');
+            limitBox.innerHTML = `⚠️ 已超過健康上限：${Math.round(config.limit)} ml`;
+        } else {
+            limitBox.classList.remove('warning');
+            limitBox.innerHTML = `📈 健康上限：${Math.round(config.limit)} ml`;
+        }
+
+        if ((total / config.target) * 100 >= 100 && !window.hasCelebrated) { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); window.hasCelebrated = true; updateHistory(true); }
+        else if ((total / config.target) * 100 < 100) { window.hasCelebrated = false; }
+        updateSmartNote(total);
     }
-    function updateSmartNote(percent) {
+    function updateSmartNote(total) {
         const noteEl = document.getElementById('noteContent'); const status = document.getElementById('status').value;
-        if (percent >= 100) { noteEl.innerHTML = "🎉 <b>今日目標已達成！</b><br>代謝力處於巔峰狀態！"; noteEl.classList.add('success'); }
-        else {
-            const tips = { 'weight_loss': ["💡 脂肪代謝需要水分參與，缺水會讓減肥進入停滯期。", "💡 飯前30分鐘喝水，能顯著增加飽足感。"], 'adult': ["💡 大腦水分若減少 2%，專注力就會開始下降。", "💡 規律補水能讓血液循環更順暢。"], 'high_temp': ["☀️ 高溫下流汗量大，請務必分次小口補水。", "☀️ 感到口渴時，身體已處於輕微脫水狀態。"], 'chronic_disease': ["⚠️ 限水患者請嚴格遵照醫囑。", "⚠️ 可用冰水漱口來緩解不適感。"] };
+        const percent = (total / config.target) * 100;
+        
+        if (total > config.limit) {
+            noteEl.innerHTML = "⚠️ <b>安全警告：飲水已達極限！</b><br>過量飲水可能造成身體負擔，建議暫停補水。若感到頭暈或噁心，請及時休息。";
+            noteEl.className = "status-note-card danger";
+        } else if (percent >= 100) {
+            noteEl.innerHTML = "🎉 <b>今日目標已達成！</b><br>代謝力處於巔峰狀態！";
+            noteEl.className = "status-note-card success";
+        } else {
+            const tips = { 'weight_loss': ["💡 脂肪代謝需要水分參與，缺水會讓減肥停滯。", "💡 飯前30分鐘喝水，能顯著增加飽足感。"], 'adult': ["💡 大腦缺水 2%，專注力就會開始下降。", "💡 規律補水能讓血液循環更順暢。"], 'high_temp': ["☀️ 高溫流汗量大，請務必分次小口補水。", "☀️ 感到口渴時，身體已處於輕微脫水狀態。"], 'chronic_disease': ["⚠️ 限水患者請嚴格遵照醫囑。", "⚠️ 可用冰水漱口緩解不適。"] };
             noteEl.innerHTML = percent >= 75 ? "🚀 快達標了！再喝一點點就成功囉！" : (tips[status] || tips['adult'])[Math.floor(Math.random() * 2)];
-            noteEl.classList.remove('success');
+            noteEl.className = "status-note-card";
         }
     }
-    function updateHistory(achieved) { let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '{}'); history[config.date] = achieved; localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); renderHistory(); }
+    function updateHistory(ach) { let h = JSON.parse(localStorage.getItem(HISTORY_KEY) || '{}'); h[config.date] = ach; localStorage.setItem(HISTORY_KEY, JSON.stringify(h)); renderHistory(); }
     function renderHistory() {
-        const grid = document.getElementById('historyDots'); grid.innerHTML = ''; let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '{}');
-        for (let i = 6; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); const dateStr = d.toLocaleDateString(); const dot = document.createElement('div'); dot.className = 'dot' + (history[dateStr] ? ' achieved' : ''); dot.setAttribute('data-date', dateStr.split('/')[1] + '/' + dateStr.split('/')[2]); grid.appendChild(dot); }
+        const grid = document.getElementById('historyDots'); grid.innerHTML = ''; let h = JSON.parse(localStorage.getItem(HISTORY_KEY) || '{}');
+        for (let i = 6; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); const ds = d.toLocaleDateString(); const dot = document.createElement('div'); dot.className = 'dot' + (h[ds] ? ' achieved' : ''); dot.setAttribute('data-date', ds.split('/')[1] + '/' + ds.split('/')[2]); grid.appendChild(dot); }
     }
-    function saveToLocal() { const payload = { profile: { gender: document.getElementById('gender').value, age: document.getElementById('age').value, weight: document.getElementById('weight').value, status: document.getElementById('status').value, cupSize: document.getElementById('cupSize').value, hourlyGoal: document.getElementById('hourlyGoal').value }, drinkData, config, lastUpdate: new Date().toLocaleDateString() }; localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); }
+    function saveToLocal() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ profile: { gender: document.getElementById('gender').value, age: document.getElementById('age').value, weight: document.getElementById('weight').value, status: document.getElementById('status').value, cupSize: document.getElementById('cupSize').value, hourlyGoal: config.hourlyGoal }, drinkData, config, lastUpdate: new Date().toLocaleDateString() })); }
     function loadSavedData() {
         const raw = localStorage.getItem(STORAGE_KEY); if (!raw) return; const data = JSON.parse(raw);
         document.getElementById('gender').value = data.profile.gender; document.getElementById('age').value = data.profile.age; document.getElementById('weight').value = data.profile.weight; document.getElementById('status').value = data.profile.status; document.getElementById('cupSize').value = data.profile.cupSize || 250; document.getElementById('hourlyGoal').value = data.profile.hourlyGoal || "";
-        if (data.lastUpdate === new Date().toLocaleDateString()) {
-            config = data.config; drinkData = data.drinkData; document.getElementById('amount').innerText = Math.round(config.target); document.getElementById('limitVal').innerText = Math.round(config.limit || 0); document.getElementById('hourlyDisplay').innerText = config.hourlyGoal ? `⏰ 每小時目標：${config.hourlyGoal} ml` : "";
-            const grid = document.getElementById('cupsGrid'); grid.innerHTML = ''; drinkData.forEach((d, i) => { createCupElement(i, d.time); }); document.getElementById('result-area').style.display = 'block'; updateUI();
-        }
+        if (data.lastUpdate === new Date().toLocaleDateString()) { config = data.config; drinkData = data.drinkData; document.getElementById('amount').innerText = Math.round(config.target); document.getElementById('limitVal').innerText = Math.round(config.limit || 0); document.getElementById('hourlyDisplay').innerText = config.hourlyGoal ? `⏰ 每小時目標：${config.hourlyGoal} ml` : ""; const grid = document.getElementById('cupsGrid'); grid.innerHTML = ''; drinkData.forEach((d, i) => { createCupElement(i, d.time); }); document.getElementById('result-area').style.display = 'block'; updateUI(); }
     }
     function clearAllData() { if (confirm("確定重設今日紀錄？")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
-    
     function exportImage() {
         const card = document.querySelector("#main-card"); document.getElementById('export-ui').style.display = 'none'; document.getElementById('reset-ui').style.display = 'none'; document.getElementById('watermark').style.display = 'block';
         html2canvas(card, { scale: 2, backgroundColor: "#ffffff", onclone: (clonedDoc) => {
-            const clonedCard = clonedDoc.querySelector("#main-card"); clonedCard.style.color = "#222"; clonedCard.querySelectorAll(".cup-water").forEach(el => el.style.background = "linear-gradient(to top, #2980b9, #3498db)");
+            const cc = clonedDoc.querySelector("#main-card"); cc.style.color = "#222"; cc.querySelectorAll(".cup-water").forEach(el => el.style.background = "linear-gradient(to top, #2980b9, #3498db)");
         }}).then(canvas => {
             const imgData = canvas.toDataURL("image/jpeg", 0.95); document.getElementById('preview-img').src = imgData; document.getElementById('img-preview-overlay').style.display = 'flex';
-            const link = document.createElement('a'); link.href = imgData; link.download = `RURU飲水海報_${config.date.replace(/\//g,'_')}.jpg`; link.click();
+            const link = document.createElement('a'); link.href = imgData; link.download = `RURU海報_${config.date}.jpg`; link.click();
             document.getElementById('export-ui').style.display = 'grid'; document.getElementById('reset-ui').style.display = 'block'; document.getElementById('watermark').style.display = 'none';
         });
     }
     function closePreview() { document.getElementById('img-preview-overlay').style.display = 'none'; }
-
-    async function exportPDF() {
-        const canvas = await html2canvas(document.querySelector("#main-card"), { scale: 2, backgroundColor: "#ffffff" });
-        const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = 190; const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 20, pdfWidth, pdfHeight);
-        const pdfData = pdf.output('bloburl');
-        // 手機版核心修復：在新分頁打開 PDF 預覽
-        window.open(pdfData, '_blank');
-        // 同時嘗試自動儲存
-        pdf.save(`RURU飲水報告_${config.date.replace(/\//g,'_')}.pdf`);
+    function exportPDF() { 
+        if (isMobile) { alert("💡 手機端不支援直接下載 PDF，請優先使用『圖檔下載』功能。"); return; }
+        html2canvas(document.querySelector("#main-card"), { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
+            const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4');
+            pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 20, 190, (canvas.height * 190) / canvas.width);
+            pdf.save(`RURU飲水報告_${config.date}.pdf`);
+        });
     }
-
     function exportExcel() {
+        if (isMobile) { alert("💡 手機端不支援下載 Excel，請使用電腦版網頁。"); return; }
         let csv = "\uFEFF日期," + config.date + "\n目標," + Math.round(config.target) + "ml\n累積," + document.getElementById('currentTotal').innerText + "ml\n\n杯次,容量,紀錄時間\n";
         drinkData.forEach((d, i) => { if(d.time) csv += (i+1) + "," + d.volume + "ml," + d.time + "\n"; });
-        // 手機版核心修復：使用 Data URI 格式
-        const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
-        const link = document.createElement("a"); link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `RURU飲水紀錄_${config.date.replace(/\//g,'_')}.csv`);
-        document.body.appendChild(link);
-        link.click(); document.body.removeChild(link);
+        const link = document.createElement("a"); link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+        link.download = `RURU飲水紀錄_${config.date}.csv`; link.click();
     }
 </script>
 </body>
