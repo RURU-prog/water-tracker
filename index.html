@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>全功能質感整合版：互動式飲水日誌 Pro</title>
+    <title>RURU-tracker：互動式飲水日誌 Pro</title>
     <style>
         :root {
             --primary: #007bff;
@@ -12,229 +12,178 @@
             --warning: #dc3545;
             --bg: #f4f7f6;
             --card-bg: #ffffff;
-            --light-blue: #e0f2fe;
             --grey: #eee;
         }
-        body { font-family: 'PingFang TC', 'Heiti TC', sans-serif; background: linear-gradient(135deg, #e0f2fe 0%, #fdfbfb 100%); padding: 10px; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #333; }
+        body { font-family: 'PingFang TC', sans-serif; background: linear-gradient(135deg, #e0f2fe 0%, #fdfbfb 100%); padding: 10px; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #333; }
         .container { width: 100%; max-width: 480px; }
-        .card { background: var(--card-bg); padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,123,255,0.1); border: 1px solid rgba(0,123,255,0.05); }
-        h2 { color: var(--primary); text-align: center; margin-top: 0; margin-bottom: 25px; font-weight: 600; font-size: 1.6em; }
-        h2::after { content: ' 💧'; }
+        .card { background: var(--card-bg); padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,123,255,0.1); border: 1px solid rgba(0,123,255,0.05); }
+        h2 { color: var(--primary); text-align: center; margin-top: 0; margin-bottom: 20px; font-weight: 600; }
         
-        .form-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .form-row { display: flex; gap: 10px; margin-bottom: 12px; }
         .group { flex: 1; }
-        label { display: block; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #495057; }
+        label { display: block; font-size: 0.8em; font-weight: bold; margin-bottom: 5px; color: #495057; }
         select, input { width: 100%; padding: 10px; border: 1px solid #e1e8ed; border-radius: 10px; box-sizing: border-box; font-size: 1em; }
         
-        button.main-btn { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--primary) 0%, #00a8ff 100%); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1.1em; }
+        .main-btn { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--primary) 0%, #00a8ff 100%); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1.1em; }
 
-        /* ================= 質感結果顯示區 (還原舊介面樣式) ================= */
-        #result-area { display: none; margin-top: 25px; pt: 20px; }
-        
-        .core-display-box { text-align: center; margin-bottom: 20px; }
-        h3.core-title { color: var(--primary); font-size: 1.2em; font-weight: bold; margin-bottom: 10px; }
-        .core-amount-wrapper { display: flex; align-items: center; justify-content: center; }
-        .result-amount { font-size: 3em; font-weight: 800; color: #0056b3; line-height: 1; }
-        .unit { font-size: 0.5em; color: var(--secondary); font-weight: normal; margin-left: 5px; margin-top: 10px; }
-        .limit-text-small { font-size: 0.8em; color: var(--secondary); margin-top: 5px; display: block; }
-        .limit-text-small span { font-weight: bold; }
+        #result-area { display: none; margin-top: 20px; }
+        .core-display { text-align: center; margin-bottom: 15px; }
+        .result-amount { font-size: 2.8em; font-weight: 800; color: #0056b3; line-height: 1; }
+        .unit { font-size: 0.5em; color: var(--secondary); margin-left: 5px; }
+        .limit-text { font-size: 0.85em; color: var(--secondary); margin-top: 8px; display: block; }
 
-        /* 進度條優化 */
-        .progress-container { width: 100%; background-color: #e9ecef; border-radius: 10px; height: 12px; margin: 15px 0; overflow: hidden; position: relative; }
-        .progress-bar { height: 100%; background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); width: 0%; border-radius: 10px; transition: width 0.5s ease-out; }
+        .progress-container { width: 100%; background-color: #e9ecef; border-radius: 10px; height: 10px; margin: 15px 0; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); width: 0%; transition: width 0.4s; }
 
-        /* 專業註解卡 (還原舊介面樣式) */
-        .status-note-card { background: white; padding: 15px; border-radius: 10px; border-left: 5px solid var(--primary); margin-top: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .note-title-line { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #333; margin-bottom: 8px; }
+        .status-note-card { background: #fdfdfd; padding: 15px; border-radius: 12px; border-left: 5px solid var(--primary); margin-top: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
         .note-content { font-size: 0.9em; color: #555; line-height: 1.5; }
-        .disclaimer-line { font-size: 0.8em; color: var(--secondary); text-align: center; margin-top: 20px; border-top: 1px dashed var(--grey); padding-top: 10px; }
 
-        /* ================= 杯子記錄區 (整合新功能) ================= */
+        /* 杯子區域 */
         .cups-section { margin-top: 25px; padding: 20px; background: #f8fbff; border-radius: 15px; border: 1px solid #e1f0ff; }
-        .cups-grid-label { display: block; font-weight: bold; color: var(--primary); margin-bottom: 15px; text-align: center; }
-        .cups-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-        
-        .cup-item { text-align: center; cursor: pointer; transition: transform 0.1s; }
-        .cup-item:active { transform: scale(0.95); }
-        .cup-icon { width: 45px; height: 55px; background: #d1ecf1; border: 3px solid var(--primary); border-radius: 5px 5px 15px 15px; margin: 0 auto 5px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .cup-icon::after { content: '💧'; font-size: 1.2em; transition: opacity 0.3s; }
-        .cup-time { font-size: 0.7em; color: #888; display: block; min-height: 1.2em; font-weight: normal; }
-        
-        /* 已喝水樣式 */
+        .cups-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+        .cup-item { text-align: center; cursor: pointer; }
+        .cup-icon { width: 42px; height: 50px; background: #d1ecf1; border: 2.5px solid var(--primary); border-radius: 5px 5px 12px 12px; margin: 0 auto 5px; position: relative; display: flex; align-items: center; justify-content: center; }
+        .cup-icon::after { content: '💧'; font-size: 1.1em; }
         .cup-item.done .cup-icon { background: #adb5bd; border-color: #6c757d; }
-        .cup-item.done .cup-icon::after { content: '✅'; font-size: 1em; opacity: 1; color: var(--primary); }
-        .cup-item.done .cup-time { color: var(--primary); font-weight: bold; }
+        .cup-item.done .cup-icon::after { content: '✅'; font-size: 0.9em; }
+        .cup-time { font-size: 0.7em; color: #999; display: block; min-height: 1.2em; }
 
-        /* ================= 新功能：總喝水量顯示區域 ================= */
-        .total-intake-section { margin-top: 25px; text-align: center; padding: 15px; background: white; border-radius: 12px; border: 1px solid var(--grey); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .total-intake-title { font-weight: bold; color: #333; margin-bottom: 5px; font-size: 0.9em; }
-        .total-intake-main { display: flex; justify-content: center; align-items: flex-end; gap: 5px; }
-        .total-num-box { font-size: 2.2em; font-weight: 800; color: #0056b3; line-height: 1; }
-        .total-num-current { color: #0056b3; }
-        .total-num-divider { color: var(--grey); font-size: 0.8em; margin: 0 3px; font-weight: 200; }
-        .total-num-target { font-size: 0.6em; color: var(--secondary); }
-        .total-unit { font-size: 0.5em; color: var(--secondary); font-weight: normal; margin-top: 10px; }
+        /* 新增杯子按鈕 */
+        .add-cup-wrapper { text-align: center; margin-top: 10px; }
+        .add-cup-btn { background: white; border: 2px dashed var(--primary); color: var(--primary); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9em; font-weight: bold; transition: 0.2s; }
+        .add-cup-btn:hover { background: var(--primary); color: white; }
+
+        /* 總量顯示 */
+        .total-box { margin-top: 20px; padding: 15px; background: white; border-radius: 12px; text-align: center; border: 1px solid var(--grey); }
+        .total-val { font-size: 1.8em; font-weight: 800; color: #0056b3; }
         
-        /* 匯出功能 */
-        .export-section { text-align: center; margin-top: 30px; }
-        .export-btn { background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .export-btn { background: #28a745; color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="card">
-        <h2>飲水模擬器 Pro 完整版</h2>
-        <div class="form-row"><div class="group"><label>性別</label><select id="gender"><option value="male">男性</option><option value="female">女性</option></select></div><div class="group"><label>年齡</label><input type="number" id="age" value="30"></div></div>
-        <div class="form-row"><div class="group"><label>體重 (kg)</label><input type="number" id="weight" value="65"></div><div class="group"><label>狀態</label><select id="status"><option value="adult">一般成人</option><option value="weight_loss">減肥期間</option><option value="high_temp">高溫/大量流汗</option><option value="chronic_disease">慢性病限水</option></select></div></div>
-        <button class="main-btn" onclick="initTrackerFull()">產生每日飲水計畫</button>
+        <h2>RURU-tracker Pro</h2>
+        <div class="form-row"><div class="group"><label>性別</label><select id="gender"><option value="female">女性</option><option value="male">男性</option></select></div><div class="group"><label>年齡</label><input type="number" id="age" value="37"></div></div>
+        <div class="form-row"><div class="group"><label>體重 (kg)</label><input type="number" id="weight" value="47.4"></div><div class="group"><label>狀態</label><select id="status"><option value="weight_loss">減肥期間</option><option value="adult">一般成人</option><option value="high_temp">高溫工作</option><option value="chronic_disease">限水患者</option></select></div></div>
+        <button class="main-btn" onclick="initRURU()">開始今日計畫</button>
 
         <div id="result-area">
-            <div class="core-display-box">
-                <h3 class="core-title">建議每日純水飲水量</h3>
-                <div class="core-amount-wrapper">
-                    <span class="result-amount" id="amount">--</span><span class="unit">ml</span>
-                </div>
-                <span class="limit-text-small" id="limitBox">健康上限：<span id="limitAmount">--</span> ml</span>
+            <div class="core-display">
+                <span style="font-size:0.9em; color:var(--primary); font-weight:bold;">建議每日目標</span><br>
+                <span class="result-amount" id="amount">--</span><span class="unit">ml</span>
+                <span class="limit-text" id="limitBox">📈 健康上限：<span id="limitVal">--</span> ml</span>
             </div>
-
             <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
-
-            <div id="statusNoteCard" class="status-note-card">
-                <div class="note-title-line">💡 <span id="noteTitle"></span></div>
-                <div class="note-content" id="noteContent"></div>
-            </div>
-
-            <div class="disclaimer-line">
-                * 此為純水建議量，不含食物及含糖飲料。<br>請分次小口飲用，單次不宜超過 300ml。
-            </div>
+            <div class="status-note-card"><div class="note-content" id="noteContent"></div></div>
 
             <div class="cups-section">
-                <label class="cups-grid-label">點擊杯子記錄喝水時間：</label>
                 <div class="cups-grid" id="cupsGrid"></div>
-            </div>
-
-            <div class="total-intake-section">
-                <div class="total-intake-title">已喝水量</div>
-                <div class="total-intake-main">
-                    <div class="total-num-box">
-                        <span class="total-num-current" id="totalIntakeNum">--</span><span class="total-num-divider">/</span><span class="total-num-target" id="totalTargetNum">--</span>
-                    </div>
-                    <span class="total-unit">ml</span>
+                <div class="add-cup-wrapper">
+                    <button class="add-cup-btn" onclick="addOneCup()">＋ 新增一杯 (250ml)</button>
                 </div>
             </div>
 
-            <div class="export-section"><button class="export-btn" onclick="exportLogFull()">💾 匯出今日飲水日誌</button></div>
+            <div class="total-box">
+                <div style="font-size:0.8em; color:#666; margin-bottom:5px;">今日已累計飲用</div>
+                <span class="total-val" id="currentTotal">0</span> <small>ml</small>
+            </div>
+
+            <button class="export-btn" onclick="exportLog()">💾 匯出今日飲水日誌</button>
         </div>
     </div>
 </div>
 
 <script>
     let drinkData = [];
-    let currentConfig = {};
+    let config = {};
 
-    function getWaterIntakeConfig(gender, age, weight, status) {
-        let coeff = (age <= 12) ? 55 : (age >= 65 ? 30 : (gender === 'male' ? 35 : 30));
-        let base = weight * coeff;
-        const adds = {'weight_loss': 500, 'high_temp': 800, 'chronic_disease': 0};
-        let add = adds[status] || 0;
-        
-        let amount = (status === 'chronic_disease') ? 1200 : base + add;
-        let limit = (status === 'chronic_disease') ? 1200 : (weight * 50) + add;
-        
-        const tips = {
-            'weight_loss': ["減肥補水技巧", "增加飲水有助於提高基礎代謝率，協助脂肪燃解後的廢物排出。建議在飯前 30 分鐘飲用 300ml 水，增加飽足感。"],
-            'high_temp': ["高溫戶外作業補水技巧", "多喝水是關鍵，但請在每小時補水量的中途補充一點鹽水或運動飲料，以防低血鈉症（水中毒）。大量流汗時可往上限量靠近，但請記得補充電解質。"],
-            'adult': ["一般成人基準", "您的飲水量計算採標準係數。請依照口渴感動態調整，分次穩定補充。分次小口飲用，單次不宜超過 300ml。口渴前先喝水。"],
-            'chronic_disease': ["⚠️ 醫囑優先", "限水者飲水量需嚴格遵照醫囑，模擬值僅供參考（預設 1200ml）。單次飲水請更小口。請勿擅自增減。"],
-            'child': ["幼童補水技巧", "幼童代謝較快，每公斤需水量較高。請注意孩子活動後的汗水流失，並鼓勵主動喝水。"]
-        };
-        const [noteTitle, noteContent] = tips[status] || ["健康提醒", "請依照口渴感動態調整，分次穩定補充水分。"];
-        
-        return { amount, limit, noteTitle, noteContent };
-    }
-
-    function initTrackerFull() {
+    function initRURU() {
         const gender = document.getElementById('gender').value;
         const age = parseInt(document.getElementById('age').value);
         const weight = parseFloat(document.getElementById('weight').value);
         const status = document.getElementById('status').value;
 
-        const config = getWaterIntakeConfig(gender, age, weight, status);
-        currentConfig = { date: new Date().toLocaleDateString(), ...config, status };
+        let coeff = (age <= 12) ? 55 : (age >= 65 ? 30 : (gender === 'male' ? 35 : 30));
+        let base = weight * coeff;
+        let add = {'weight_loss': 500, 'high_temp': 800, 'chronic_disease': 0}[status] || 0;
         
-        // 更新質感結果顯示區 (大數字)
-        document.getElementById('amount').innerText = Math.round(config.amount);
-        document.getElementById('limitAmount').innerText = Math.round(config.limit);
+        let target = (status === 'chronic_disease') ? 1200 : base + add;
+        let limit = (status === 'chronic_disease') ? 1200 : (weight * 50) + add;
+
+        config = { target, limit, date: new Date().toLocaleDateString() };
+        
+        document.getElementById('amount').innerText = Math.round(target);
+        document.getElementById('limitVal').innerText = Math.round(limit);
+        document.getElementById('noteContent').innerText = getNote(status);
         document.getElementById('limitBox').style.display = (status === 'chronic_disease') ? 'none' : 'block';
 
-        // 更新質感結果顯示區 (進度條最大值)
-        const progressBar = document.getElementById('progressBar');
-        progressBar.max = Math.round(config.amount);
-        progressBar.value = 0; // 初始化為 0
-        progressBar.style.width = '0%'; // 初始化為 0
-
-        // 更新質感結果顯示區 (專業註解)
-        document.getElementById('noteTitle').innerText = config.noteTitle;
-        document.getElementById('noteContent').innerText = config.noteContent;
-
-        // 生成杯子 (每杯 250ml)
-        const cupCount = Math.ceil(config.amount / 250);
+        // 初始化杯子 (按建議量)
+        const cupCount = Math.ceil(target / 250);
         const grid = document.getElementById('cupsGrid');
         grid.innerHTML = '';
         drinkData = [];
+        for (let i = 0; i < cupCount; i++) { createCupElement(i); }
 
-        for (let i = 0; i < cupCount; i++) {
-            drinkData.push({ id: i, time: null, volume: 250 });
-            const cup = document.createElement('div');
-            cup.className = 'cup-item'; cup.id = `cup-${i}`; cup.onclick = () => toggleCupFull(i);
-            cup.innerHTML = `<div class="cup-icon"></div><span class="cup-time" id="time-${i}">--:--</span><span style="font-size:0.6em; color:#999;">#${i+1} (250ml)</span>`;
-            grid.appendChild(cup);
-        }
-
-        // 更新總喝水量顯示區域 (新功能：初始化為 0)
-        document.getElementById('totalIntakeNum').innerText = 0;
-        document.getElementById('totalTargetNum').innerText = Math.round(config.amount);
-
+        updateUI();
         document.getElementById('result-area').style.display = 'block';
     }
 
-    function toggleCupFull(index) {
+    function createCupElement(index) {
+        drinkData.push({ id: index, time: null, volume: 250 });
+        const grid = document.getElementById('cupsGrid');
+        const cup = document.createElement('div');
+        cup.className = 'cup-item';
+        cup.id = `cup-${index}`;
+        cup.onclick = () => toggleCup(index);
+        cup.innerHTML = `<div class="cup-icon"></div><span class="cup-time" id="time-${index}">--:--</span>`;
+        grid.appendChild(cup);
+    }
+
+    function addOneCup() {
+        createCupElement(drinkData.length);
+        // 新增杯子時不需要立刻 updateUI，等點擊杯子才更新總量
+    }
+
+    function toggleCup(index) {
         const item = document.getElementById(`cup-${index}`);
         const timeLabel = document.getElementById(`time-${index}`);
-        
         if (!drinkData[index].time) {
             const now = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             drinkData[index].time = now; item.classList.add('done'); timeLabel.innerText = now;
         } else {
             drinkData[index].time = null; item.classList.remove('done'); timeLabel.innerText = '--:--';
         }
-
-        // 新功能：計算並更新總喝水量和進度條
-        const totalIntake = drinkData.reduce((sum, d) => sum + (d.time ? d.volume : 0), 0);
-        document.getElementById('totalIntakeNum').innerText = totalIntake;
-
-        // 更新質感結果顯示區的進度條
-        const target = Math.round(currentConfig.amount);
-        let percentage = (totalIntake / target) * 100;
-        if (percentage > 100) percentage = 100; // 上限為 100%
-        document.getElementById('progressBar').style.width = percentage + '%';
+        updateUI();
     }
 
-    function exportLogFull() {
-        let csvContent = "data:text/csv;charset=utf-8,\uFEFF飲水日誌報告\n";
-        csvContent += `日期,${currentConfig.date}\n`;
-        csvContent += `建議目標量,${Math.round(currentConfig.amount)} ml\n`;
-        csvContent += `健康上限量,${Math.round(currentConfig.limit)} ml\n`;
-        csvContent += `狀態,${currentConfig.status}\n\n`;
-        csvContent += "杯次,容量,紀錄時間,狀態\n";
-        drinkData.forEach((d, idx) => {
-            const statusStr = d.time ? "已完成" : "未完成";
-            csvContent += `${idx + 1},${d.volume}ml,${d.time || "--"},${statusStr}\n`;
-        });
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a"); link.setAttribute("href", encodedUri); link.setAttribute("download", `專業飲水日誌_${currentConfig.date}.csv`);
-        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    function updateUI() {
+        const totalIntake = drinkData.reduce((sum, d) => sum + (d.time ? d.volume : 0), 0);
+        document.getElementById('currentTotal').innerText = totalIntake;
+        
+        let percentage = (totalIntake / config.target) * 100;
+        document.getElementById('progressBar').style.width = Math.min(percentage, 100) + '%';
+    }
+
+    function getNote(status) {
+        const notes = {
+            'weight_loss': "💡 減肥補水：飯前30分鐘喝水能增加飽足感，並協助代謝脂肪殘餘物。",
+            'high_temp': "☀️ 高溫提醒：大量流汗時請分次補充，並適度補充鹽分防脫水。",
+            'chronic_disease': "⚠️ 醫囑優先：限水者請嚴格遵守醫師建議總量，避免造成心肺負擔。",
+            'adult': "💧 健康基準：口渴前先喝水，分次小口飲用效果最佳。"
+        };
+        return notes[status] || "保持水分充足，維持代謝健康。";
+    }
+
+    function exportLog() {
+        let csv = "\uFEFF飲水日誌,日期," + config.date + "\n建議目標," + Math.round(config.target) + "ml,健康上限," + Math.round(config.limit) + "ml\n\n杯次,容量,紀錄時間\n";
+        drinkData.forEach((d, i) => { if(d.time) csv += (i+1) + "," + d.volume + "ml," + d.time + "\n"; });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute("download", `飲水日誌_${config.date}.csv`);
+        link.click();
     }
 </script>
 
