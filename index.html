@@ -4,58 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>RURU-tracker Pro V6.3：全功能修復版</title>
+    <title>RURU-tracker Pro V6.4：質感旗艦版</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        :root { --primary: #007bff; --secondary: #6c757d; --success: #28a745; --water: #3498db; --bg: #f4f7f6; --card-bg: #ffffff; }
+        :root { --primary: #007bff; --secondary: #6c757d; --success: #28a745; --water-light: #5dade2; --water-dark: #3498db; --bg: #f4f7f6; --card-bg: #ffffff; }
         body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background: #f0f4f8; padding: 10px; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #333; }
         .container { width: 100%; max-width: 480px; }
-        .card { background: var(--card-bg); padding: 25px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
+        .card { background: var(--card-bg); padding: 25px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
         
-        /* 增加對比度：確保截圖清晰 */
         h2 { color: #0056b3; text-align: center; margin-top: 0; margin-bottom: 20px; font-weight: 800; }
         .form-row { display: flex; gap: 10px; margin-bottom: 12px; }
         .group { flex: 1; }
-        label { display: block; font-size: 0.75em; font-weight: bold; margin-bottom: 5px; color: #444; }
+        label { display: block; font-size: 0.75em; font-weight: bold; margin-bottom: 5px; color: #555; }
         select, input { width: 100%; padding: 12px; border: 1.5px solid #ccc; border-radius: 12px; box-sizing: border-box; font-size: 1em; background-color: #fff; color: #000; }
 
-        .main-btn { width: 100%; padding: 16px; background: #007bff; color: white; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1.1em; }
+        .main-btn { width: 100%; padding: 16px; background: linear-gradient(45deg, #007bff, #00a8ff); color: white; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1.1em; box-shadow: 0 4px 10px rgba(0,123,255,0.2); }
         
         #result-area { display: none; margin-top: 25px; }
-        .core-display { text-align: center; margin-bottom: 20px; background: #f8fbff; padding: 20px; border-radius: 20px; border: 2px solid #d1e3f8; }
+        .core-display { text-align: center; margin-bottom: 20px; background: #f8fbff; padding: 20px; border-radius: 20px; border: 2.5px solid #d1e3f8; }
         .result-amount { font-size: 3.2em; font-weight: 900; color: #004085; line-height: 1; }
         .unit { font-size: 0.4em; color: #555; margin-left: 5px; }
         
-        /* 上限設計回歸 */
         .limit-box { font-size: 0.8em; color: #dc3545; font-weight: bold; margin-top: 5px; }
         .hourly-target { font-size: 0.85em; color: #007bff; font-weight: bold; margin-top: 8px; display: block; }
 
-        .progress-container { width: 100%; background-color: #e9ecef; border-radius: 10px; height: 14px; margin: 15px 0; overflow: hidden; border: 1px solid #ddd; }
-        .progress-bar { height: 100%; background: #00b4d8; width: 0%; transition: width 1s; }
+        .progress-container { width: 100%; background-color: #e9ecef; border-radius: 10px; height: 14px; margin: 15px 0; overflow: hidden; border: 1.5px solid #ddd; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #4facfe, #00f2fe); width: 0%; transition: width 1s; }
 
-        .status-note-card { background: #fff; padding: 15px; border-radius: 15px; border: 2px solid #eee; border-left: 6px solid #007bff; margin-top: 10px; font-size: 0.9em; line-height: 1.6; color: #222; }
+        .status-note-card { background: #fff; padding: 15px; border-radius: 15px; border: 1.5px solid #eee; border-left: 6px solid #007bff; margin-top: 10px; font-size: 0.9em; line-height: 1.6; color: #222; }
         .status-note-card.success { border-left-color: var(--success); background-color: #f0fff4; }
 
-        .cups-section { margin-top: 20px; padding: 15px; background: #fff; border-radius: 20px; border: 2px solid #eee; }
+        .cups-section { margin-top: 20px; padding: 15px; background: #fff; border-radius: 20px; border: 1.5px solid #eee; }
         .cups-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 15px; }
         .cup-item { text-align: center; cursor: pointer; }
         
-        /* 強化杯子邊框與液體顏色 */
-        .cup-glass { width: 42px; height: 52px; border: 2.5px solid #888; border-radius: 5px 5px 12px 12px; margin: 0 auto 5px; position: relative; overflow: hidden; background: #fff; }
-        .cup-water { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: #007bff; transition: height 0.5s; }
-        .cup-item.done .cup-glass { border-color: #004085; }
+        /* 質感漸層水杯回歸 */
+        .cup-glass { width: 42px; height: 52px; border: 2.5px solid #999; border-radius: 5px 5px 12px 12px; margin: 0 auto 5px; position: relative; overflow: hidden; background: #fff; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+        .cup-water { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(to top, #3498db, #5dade2); transition: height 0.6s ease; }
+        .cup-item.done .cup-glass { border-color: #0056b3; }
         .cup-item.done .cup-water { height: 100%; }
         
-        .cup-label { font-size: 0.7em; color: #333; font-weight: bold; display: block; }
-        .cup-time { font-size: 0.65em; color: #0056b3; font-weight: 800; min-height: 1.2em; margin-top: 2px; }
+        .cup-label { font-size: 0.7em; color: #444; font-weight: bold; display: block; }
+        .cup-time { font-size: 0.65em; color: #007bff; font-weight: 800; min-height: 1.2em; margin-top: 2px; }
 
         .add-cup-btn { background: #fff; border: 2px dashed #007bff; color: #007bff; padding: 10px; border-radius: 12px; cursor: pointer; font-size: 0.85em; font-weight: bold; width: 100%; }
         .total-box { margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 15px; text-align: center; border: 2px solid #eee; }
         .total-val { font-size: 2.2em; font-weight: 900; color: #004085; }
         
-        /* 歷史牆 */
         .history-wall { margin-top: 20px; padding: 12px; background: #fff; border-radius: 15px; border: 1.5px solid #eee; }
         .history-title { font-size: 0.75em; font-weight: bold; color: #666; margin-bottom: 8px; display: block; text-align: center; }
         .history-dots { display: flex; justify-content: center; gap: 8px; }
@@ -63,19 +60,16 @@
         .dot.achieved { background: #28a745; border: 1px solid #1e7e34; }
         .dot::after { content: attr(data-date); position: absolute; top: 15px; left: 50%; transform: translateX(-50%); font-size: 7px; color: #888; }
 
-        /* 導出 UI */
         .export-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; padding-top: 15px; border-top: 2px solid #eee; }
         .export-btn { border: none; padding: 12px 5px; border-radius: 12px; color: white; font-weight: bold; font-size: 0.75em; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .btn-excel { background: #28a745; } .btn-pdf { background: #dc3545; } .btn-img { background: #f39c12; }
         
         .reset-link { font-size: 0.75em; color: #999; text-decoration: underline; margin-top: 15px; display: block; text-align: center; cursor: pointer; }
         
-        /* 預覽遮罩 */
         #img-preview-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; padding: 15px; }
-        #preview-img { max-width: 100%; max-height: 80%; border-radius: 10px; border: 3px solid #fff; }
+        #preview-img { max-width: 100%; max-height: 80%; border-radius: 12px; border: 4px solid #fff; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
         .preview-tip { color: white; margin-bottom: 10px; font-weight: bold; text-align: center; }
         .close-preview { margin-top: 15px; background: #fff; border: none; padding: 8px 25px; border-radius: 20px; font-weight: bold; }
-
         .watermark { text-align: right; font-size: 0.6em; color: #aaa; margin-top: 10px; display: none; }
     </style>
 </head>
@@ -95,7 +89,7 @@
             <div class="group"><label>預設每杯 (ml)</label><input type="number" id="cupSize" value="250"></div>
             <div class="group"><label>每小時目標 (ml)</label><input type="number" id="hourlyGoal" placeholder="選填"></div>
         </div>
-        <button class="main-btn" id="startBtn" onclick="initRURU()">開始今日計畫</button>
+        <button class="main-btn" onclick="initRURU()">開始今日計畫</button>
         
         <div id="result-area">
             <div class="core-display">
@@ -139,7 +133,7 @@
 
 <script>
     let drinkData = []; let config = {};
-    const STORAGE_KEY = 'RURU_WATER_V6_3';
+    const STORAGE_KEY = 'RURU_WATER_V6_4';
     const HISTORY_KEY = 'RURU_WATER_HISTORY';
 
     window.onload = function() { loadSavedData(); renderHistory(); };
@@ -157,11 +151,9 @@
         const age = parseInt(ageVal); const weight = parseFloat(weightVal);
         let coeff = (age <= 12) ? 55 : (age >= 65 ? 30 : (gender === 'male' ? 35 : 30));
         let target = (status === 'chronic_disease') ? 1200 : (weight * coeff) + (status === 'weight_loss' ? 500 : (status === 'high_temp' ? 800 : 0));
-        // 健康上限計算回歸
         let limit = (status === 'chronic_disease') ? 1200 : (weight * 50) + (status === 'weight_loss' ? 500 : (status === 'high_temp' ? 800 : 0));
 
         config = { target, limit, activeCupSize, hourlyGoal, date: new Date().toLocaleDateString() };
-        
         document.getElementById('amount').innerText = Math.round(target);
         document.getElementById('limitVal').innerText = Math.round(limit);
         document.getElementById('hourlyDisplay').innerText = hourlyGoal ? `⏰ 每小時目標：${hourlyGoal} ml` : "";
@@ -208,7 +200,6 @@
         document.getElementById('currentTotal').innerText = total;
         const percent = (total / config.target) * 100;
         document.getElementById('progressBar').style.width = Math.min(percent, 100) + '%';
-        
         if (percent >= 100 && !window.hasCelebrated) {
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             window.hasCelebrated = true; updateHistory(true);
@@ -276,7 +267,6 @@
     function clearAllData() { if (confirm("確定重設今日紀錄？")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
 
     function exportImage() {
-        // 高對比截圖優化
         const card = document.querySelector("#main-card");
         const exportUI = document.getElementById('export-ui');
         const resetUI = document.getElementById('reset-ui');
@@ -291,20 +281,20 @@
             backgroundColor: "#ffffff",
             logging: false,
             onclone: (clonedDoc) => {
-                // 強制克隆後的 DOM 變為高對比色，解決截圖褪色
                 const clonedCard = clonedDoc.querySelector("#main-card");
-                clonedCard.style.color = "#000";
-                clonedCard.querySelectorAll("*").forEach(el => el.style.color = "#000");
-                clonedCard.querySelectorAll(".cup-glass").forEach(el => el.style.borderColor = "#000");
-                clonedCard.querySelectorAll(".cup-time").forEach(el => el.style.color = "#007bff");
-                clonedCard.querySelector(".result-amount").style.color = "#004085";
+                clonedCard.style.color = "#222";
+                // 加深漸層色，防止在截圖中過度褪色
+                clonedCard.querySelectorAll(".cup-water").forEach(el => {
+                    el.style.background = "linear-gradient(to top, #2980b9, #3498db)"; 
+                });
+                clonedCard.querySelectorAll(".cup-glass").forEach(el => el.style.borderColor = "#666");
+                clonedCard.querySelectorAll(".cup-time").forEach(el => el.style.color = "#0056b3");
             }
         }).then(canvas => {
-            const imgData = canvas.toDataURL("image/jpeg", 0.9);
+            const imgData = canvas.toDataURL("image/jpeg", 0.95);
             document.getElementById('preview-img').src = imgData;
             document.getElementById('img-preview-overlay').style.display = 'flex';
             
-            // 自動嘗試下載 (PC)
             const link = document.createElement('a');
             link.href = imgData;
             link.download = `RURU飲水海報_${config.date.replace(/\//g,'_')}.jpg`;
@@ -320,13 +310,12 @@
 
     async function exportPDF() {
         const canvas = await html2canvas(document.querySelector("#main-card"), { scale: 2, backgroundColor: "#ffffff" });
-        const imgData = canvas.toDataURL('image/png');
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = 190;
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
         pdf.text("RURU-tracker 個人飲水日誌", 10, 15);
-        pdf.addImage(imgData, 'PNG', 10, 20, pdfWidth, pdfHeight);
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 20, pdfWidth, pdfHeight);
         pdf.save(`RURU飲水報告_${config.date.replace(/\//g,'_')}.pdf`);
     }
 
