@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>RURU-tracker Pro V6.1：相容修復版</title>
+    <title>RURU-tracker Pro V6.2：清晰自動版</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -13,7 +13,7 @@
         body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background: linear-gradient(135deg, #e0f2fe 0%, #fdfbfb 100%); padding: 10px; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #333; }
         .container { width: 100%; max-width: 480px; }
         .card { background: var(--card-bg); padding: 25px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,123,255,0.1); border: 1px solid rgba(0,123,255,0.05); position: relative; overflow: hidden; }
-        h2 { color: var(--primary); text-align: center; margin-top: 0; margin-bottom: 20px; font-weight: 800; letter-spacing: 1px; }
+        h2 { color: var(--primary); text-align: center; margin-top: 0; margin-bottom: 20px; font-weight: 800; }
         
         .form-row { display: flex; gap: 10px; margin-bottom: 12px; }
         .group { flex: 1; }
@@ -26,24 +26,26 @@
         .core-display { text-align: center; margin-bottom: 20px; background: #f0f7ff; padding: 20px; border-radius: 20px; border: 1px solid #e1f0ff; }
         .result-amount { font-size: 3.2em; font-weight: 900; color: #0056b3; line-height: 1; }
         .unit { font-size: 0.4em; color: var(--secondary); margin-left: 5px; }
-        .hourly-target { font-size: 0.85em; color: var(--primary); font-weight: bold; margin-top: 10px; background: #fff; display: inline-block; padding: 4px 12px; border-radius: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .hourly-target { font-size: 0.85em; color: var(--primary); font-weight: bold; margin-top: 10px; background: #fff; display: inline-block; padding: 4px 12px; border-radius: 20px; }
 
         .progress-container { width: 100%; background-color: #e9ecef; border-radius: 10px; height: 14px; margin: 20px 0; overflow: hidden; }
-        .progress-bar { height: 100%; background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); width: 0%; transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); width: 0%; transition: width 1s ease-in-out; }
 
-        .status-note-card { background: #fff; padding: 15px; border-radius: 15px; border-left: 6px solid var(--primary); margin-top: 10px; font-size: 0.9em; line-height: 1.6; }
+        .status-note-card { background: #fff; padding: 15px; border-radius: 15px; border-left: 6px solid var(--primary); margin-top: 10px; font-size: 0.9em; line-height: 1.6; color: #444; }
         .status-note-card.success { border-left-color: var(--success); background-color: #f0fff4; }
 
         .cups-section { margin-top: 25px; padding: 20px; background: #fdfdfd; border-radius: 20px; border: 1px solid #eee; }
         .cups-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
         .cup-item { text-align: center; cursor: pointer; }
         
-        .cup-glass { width: 45px; height: 55px; border: 3px solid #d1e3f8; border-radius: 6px 6px 15px 15px; margin: 0 auto 8px; position: relative; overflow: hidden; background: #fff; }
-        .cup-water { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(to top, #3498db, #5dade2); transition: height 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
+        /* 加深杯子邊框確保截圖清晰 */
+        .cup-glass { width: 45px; height: 55px; border: 3px solid #b3d1f3; border-radius: 6px 6px 15px 15px; margin: 0 auto 8px; position: relative; overflow: hidden; background: #fff; }
+        .cup-water { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: #3498db; transition: height 0.6s ease; }
+        .cup-item.done .cup-glass { border-color: #007bff; }
         .cup-item.done .cup-water { height: 100%; }
         
-        .cup-label { font-size: 0.65em; color: #999; font-weight: bold; display: block; }
-        .cup-time { font-size: 0.6em; color: var(--primary); font-weight: bold; min-height: 1.2em; margin-top: 2px; }
+        .cup-label { font-size: 0.7em; color: #777; font-weight: bold; display: block; }
+        .cup-time { font-size: 0.65em; color: #007bff; font-weight: bold; min-height: 1.2em; margin-top: 2px; }
 
         .add-cup-btn { background: #fff; border: 2px dashed #3498db; color: #3498db; padding: 12px; border-radius: 15px; cursor: pointer; font-size: 0.85em; font-weight: bold; width: 100%; }
         .total-box { margin-top: 20px; padding: 15px; background: #fff; border-radius: 18px; text-align: center; border: 1px solid #eee; }
@@ -53,11 +55,11 @@
         .export-btn { border: none; padding: 12px 5px; border-radius: 12px; color: white; font-weight: bold; font-size: 0.75em; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .btn-excel { background: #2ecc71; } .btn-pdf { background: #e74c3c; } .btn-img { background: #f39c12; }
         
-        /* 圖片預覽遮罩層 */
-        #img-preview-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; padding: 20px; box-sizing: border-box; }
-        #preview-img { max-width: 100%; max-height: 80%; border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        .preview-tip { color: white; margin-top: 20px; font-weight: bold; text-align: center; line-height: 1.6; }
-        .close-preview { margin-top: 20px; background: white; border: none; padding: 10px 30px; border-radius: 25px; font-weight: bold; cursor: pointer; }
+        /* 預覽視窗 */
+        #img-preview-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; padding: 20px; box-sizing: border-box; }
+        #preview-img { max-width: 100%; max-height: 75%; border-radius: 15px; border: 5px solid white; }
+        .preview-tip { color: white; margin-top: 15px; font-weight: bold; text-align: center; }
+        .close-preview { margin-top: 15px; background: white; border: none; padding: 10px 30px; border-radius: 25px; font-weight: bold; }
 
         .history-wall { margin-top: 25px; padding: 15px; background: #f8f9fa; border-radius: 15px; }
         .history-title { font-size: 0.75em; font-weight: bold; color: #999; margin-bottom: 10px; display: block; text-align: center; }
@@ -67,7 +69,7 @@
         .dot::after { content: attr(data-date); position: absolute; top: 18px; left: 50%; transform: translateX(-50%); font-size: 8px; color: #bbb; white-space: nowrap; }
 
         .reset-link { font-size: 0.75em; color: #ccc; text-decoration: underline; margin-top: 20px; display: block; text-align: center; cursor: pointer; }
-        .watermark { position: absolute; bottom: 10px; right: 20px; font-size: 0.6em; color: #eee; display: none; }
+        .watermark { position: absolute; bottom: 10px; right: 20px; font-size: 0.6em; color: #999; display: none; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -112,8 +114,8 @@
 </div>
 
 <div id="img-preview-overlay">
-    <div class="preview-tip">✨ 您的飲水海報已產生！<br>請【長按圖片】並選擇【儲存影像】</div>
-    <img id="preview-img" src="" alt="飲水海報預覽">
+    <div class="preview-tip">電腦端已嘗試自動下載 ✨<br>手機端請【長按圖片】儲存</div>
+    <img id="preview-img" src="" alt="飲水海報">
     <button class="close-preview" onclick="closePreview()">關閉預覽</button>
 </div>
 
@@ -131,7 +133,6 @@
         const status = document.getElementById('status').value;
         const hourlyGoalInput = document.getElementById('hourlyGoal').value;
         const activeCupSize = hourlyGoalInput ? parseInt(hourlyGoalInput) : (parseInt(document.getElementById('cupSize').value) || 250);
-
         if (!gender || !ageVal || !weightVal || !status) { if(!isAutoLoad) alert("請填寫完整喔！"); return; }
         const target = (status === 'chronic_disease') ? 1200 : (parseFloat(weightVal) * (parseInt(ageVal) <= 12 ? 55 : (parseInt(ageVal) >= 65 ? 30 : (gender === 'male' ? 35 : 30)))) + (status === 'weight_loss' ? 500 : (status === 'high_temp' ? 800 : 0));
         config = { target, activeCupSize, hourlyGoal: hourlyGoalInput, date: new Date().toLocaleDateString() };
@@ -162,9 +163,7 @@
         if (!drinkData[index].time) {
             drinkData[index].time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             item.classList.add('done'); timeLabel.innerText = drinkData[index].time;
-        } else {
-            drinkData[index].time = null; item.classList.remove('done'); timeLabel.innerText = '--:--';
-        }
+        } else { drinkData[index].time = null; item.classList.remove('done'); timeLabel.innerText = '--:--'; }
         updateUI(); saveToLocal();
     }
 
@@ -242,33 +241,55 @@
             config = data.config; drinkData = data.drinkData;
             document.getElementById('amount').innerText = Math.round(config.target);
             document.getElementById('hourlyDisplay').innerText = config.hourlyGoal ? `⏰ 每小時目標：${config.hourlyGoal} ml` : "";
+            document.getElementById('addCupBtn').innerText = `＋ 手動新增 ${config.activeCupSize}ml`;
             refreshCups(); document.getElementById('result-area').style.display = 'block'; updateUI();
         }
     }
 
     function clearAllData() { if (confirm("確定重設今日紀錄？")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
     
-    // --- 修復版圖片下載邏輯 ---
+    // --- V6.2 終極清晰自動下載邏輯 ---
     function exportImage() {
-        document.getElementById('export-ui').style.visibility = 'hidden';
-        document.getElementById('reset-ui').style.visibility = 'hidden';
-        document.getElementById('watermark').style.display = 'block';
+        const exportUI = document.getElementById('export-ui');
+        const resetUI = document.getElementById('reset-ui');
+        const watermark = document.getElementById('watermark');
+        
+        // 拍照前隱藏不需要的 UI，顯示浮水印
+        exportUI.style.visibility = 'hidden';
+        resetUI.style.visibility = 'hidden';
+        watermark.style.display = 'block';
 
-        html2canvas(document.querySelector("#main-card"), { scale: 2, backgroundColor: "#f4f7f6" }).then(canvas => {
-            const imgData = canvas.toDataURL("image/jpeg", 0.9);
+        html2canvas(document.querySelector("#main-card"), { 
+            scale: 2, 
+            backgroundColor: "#ffffff", // 強制純白背景，解決反白問題
+            useCORS: true,
+            logging: false
+        }).then(canvas => {
+            const imgData = canvas.toDataURL("image/jpeg", 1.0); // 1.0 最高畫質
+            
+            // 1. 嘗試自動下載 (電腦端)
+            const link = document.createElement('a');
+            link.href = imgData;
+            link.download = `RURU飲水海報_${config.date.replace(/\//g,'_')}.jpg`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // 2. 手機端備用預覽 (解決 LINE/Safari 下載攔截)
             document.getElementById('preview-img').src = imgData;
             document.getElementById('img-preview-overlay').style.display = 'flex';
             
-            document.getElementById('export-ui').style.visibility = 'visible';
-            document.getElementById('reset-ui').style.visibility = 'visible';
-            document.getElementById('watermark').style.display = 'none';
+            // 恢復畫面
+            exportUI.style.visibility = 'visible';
+            resetUI.style.visibility = 'visible';
+            watermark.style.display = 'none';
         });
     }
 
     function closePreview() { document.getElementById('img-preview-overlay').style.display = 'none'; }
 
     async function exportPDF() {
-        const canvas = await html2canvas(document.querySelector("#main-card"), { scale: 2 });
+        const canvas = await html2canvas(document.querySelector("#main-card"), { scale: 2, backgroundColor: "#ffffff" });
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
         pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 20, 190, (canvas.height * 190) / canvas.width);
