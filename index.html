@@ -6,42 +6,27 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>RURU-tracker：互動式飲水日誌 Pro</title>
+    <title>RURU-tracker：互動式飲水日誌</title>
     <style>
-        :root {
-            --primary: #007bff;
-            --secondary: #6c757d;
-            --success: #28a745;
-            --warning: #dc3545;
-            --bg: #f4f7f6;
-            --card-bg: #ffffff;
-            --grey: #eee;
-        }
+        :root { --primary: #007bff; --secondary: #6c757d; --success: #28a745; --bg: #f4f7f6; --card-bg: #ffffff; --grey: #eee; }
         body { font-family: 'PingFang TC', sans-serif; background: linear-gradient(135deg, #e0f2fe 0%, #fdfbfb 100%); padding: 10px; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #333; }
         .container { width: 100%; max-width: 480px; }
         .card { background: var(--card-bg); padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,123,255,0.1); border: 1px solid rgba(0,123,255,0.05); }
         h2 { color: var(--primary); text-align: center; margin-top: 0; margin-bottom: 20px; font-weight: 600; }
-        
         .form-row { display: flex; gap: 10px; margin-bottom: 12px; }
         .group { flex: 1; }
         label { display: block; font-size: 0.8em; font-weight: bold; margin-bottom: 5px; color: #495057; }
-        select, input { width: 100%; padding: 10px; border: 1px solid #e1e8ed; border-radius: 10px; box-sizing: border-box; font-size: 1em; }
-        
+        select, input { width: 100%; padding: 10px; border: 1px solid #e1e8ed; border-radius: 10px; box-sizing: border-box; font-size: 1em; background-color: white; }
         .main-btn { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--primary) 0%, #00a8ff 100%); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1.1em; }
-
         #result-area { display: none; margin-top: 20px; }
         .core-display { text-align: center; margin-bottom: 15px; }
         .result-amount { font-size: 2.8em; font-weight: 800; color: #0056b3; line-height: 1; }
         .unit { font-size: 0.5em; color: var(--secondary); margin-left: 5px; }
         .limit-text { font-size: 0.85em; color: var(--secondary); margin-top: 8px; display: block; }
-
         .progress-container { width: 100%; background-color: #e9ecef; border-radius: 10px; height: 10px; margin: 15px 0; overflow: hidden; }
         .progress-bar { height: 100%; background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); width: 0%; transition: width 0.4s; }
-
         .status-note-card { background: #fdfdfd; padding: 15px; border-radius: 12px; border-left: 5px solid var(--primary); margin-top: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
         .note-content { font-size: 0.9em; color: #555; line-height: 1.5; }
-
-        /* 杯子區域 */
         .cups-section { margin-top: 25px; padding: 20px; background: #f8fbff; border-radius: 15px; border: 1px solid #e1f0ff; }
         .cups-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
         .cup-item { text-align: center; cursor: pointer; }
@@ -50,105 +35,73 @@
         .cup-item.done .cup-icon { background: #adb5bd; border-color: #6c757d; }
         .cup-item.done .cup-icon::after { content: '✅'; font-size: 0.9em; }
         .cup-time { font-size: 0.7em; color: #999; display: block; min-height: 1.2em; }
-
-        /* 新增杯子按鈕 */
         .add-cup-wrapper { text-align: center; margin-top: 10px; }
         .add-cup-btn { background: white; border: 2px dashed var(--primary); color: var(--primary); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9em; font-weight: bold; transition: 0.2s; }
-        .add-cup-btn:hover { background: var(--primary); color: white; }
-
-        /* 總量顯示 */
         .total-box { margin-top: 20px; padding: 15px; background: white; border-radius: 12px; text-align: center; border: 1px solid var(--grey); }
         .total-val { font-size: 1.8em; font-weight: 800; color: #0056b3; }
-        
         .export-btn { background: #28a745; color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 20px; }
     </style>
 </head>
 <body>
-
 <div class="container">
     <div class="card">
         <h2>RURU-tracker Pro</h2>
-        <div class="form-row"><div class="group"><label>性別</label><select id="gender"><option value="female">女性</option><option value="male">男性</option></select></div><div class="group"><label>年齡</label><input type="number" placeholder="請輸入年齡"></div></div>
-        <div class="form-row"><div class="group"><label>體重 (kg)</label><input type="number" id="weight" placeholder="請輸入體重"></div><div class="group"><label>狀態</label><select id="status"><option value="weight_loss">減肥期間</option><option value="adult">一般成人</option><option value="high_temp">高溫工作</option><option value="chronic_disease">限水患者</option></select></div></div>
+        <div class="form-row">
+            <div class="group"><label>性別</label><select id="gender"><option value="" disabled selected>請選擇性別</option><option value="female">女性</option><option value="male">男性</option></select></div>
+            <div class="group"><label>年齡</label><input type="number" id="age" placeholder="請輸入年齡"></div>
+        </div>
+        <div class="form-row">
+            <div class="group"><label>體重 (kg)</label><input type="number" id="weight" placeholder="請輸入體重"></div>
+            <div class="group"><label>狀態</label><select id="status"><option value="" disabled selected>請選擇目前狀態</option><option value="weight_loss">減肥期間</option><option value="adult">一般成人</option><option value="high_temp">高溫工作</option><option value="chronic_disease">限水患者</option></select></div>
+        </div>
         <button class="main-btn" onclick="initRURU()">開始今日計畫</button>
-
         <div id="result-area">
-            <div class="core-display">
-                <span style="font-size:0.9em; color:var(--primary); font-weight:bold;">建議每日目標</span><br>
-                <span class="result-amount" id="amount">--</span><span class="unit">ml</span>
-                <span class="limit-text" id="limitBox">📈 健康上限：<span id="limitVal">--</span> ml</span>
-            </div>
+            <div class="core-display"><span style="font-size:0.9em; color:var(--primary); font-weight:bold;">建議每日目標</span><br><span class="result-amount" id="amount">--</span><span class="unit">ml</span><span class="limit-text" id="limitBox">📈 健康上限：<span id="limitVal">--</span> ml</span></div>
             <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
             <div class="status-note-card"><div class="note-content" id="noteContent"></div></div>
-
-            <div class="cups-section">
-                <div class="cups-grid" id="cupsGrid"></div>
-                <div class="add-cup-wrapper">
-                    <button class="add-cup-btn" onclick="addOneCup()">＋ 新增一杯 (250ml)</button>
-                </div>
-            </div>
-
-            <div class="total-box">
-                <div style="font-size:0.8em; color:#666; margin-bottom:5px;">今日已累計飲用</div>
-                <span class="total-val" id="currentTotal">0</span> <small>ml</small>
-            </div>
-
+            <div class="cups-section"><div class="cups-grid" id="cupsGrid"></div><div class="add-cup-wrapper"><button class="add-cup-btn" onclick="addOneCup()">＋ 新增一杯 (250ml)</button></div></div>
+            <div class="total-box"><div style="font-size:0.8em; color:#666; margin-bottom:5px;">今日已累計飲用</div><span class="total-val" id="currentTotal">0</span> <small>ml</small></div>
             <button class="export-btn" onclick="exportLog()">💾 匯出今日飲水日誌</button>
         </div>
     </div>
 </div>
-
 <script>
-    let drinkData = [];
-    let config = {};
-
+    let drinkData = []; let config = {};
     function initRURU() {
         const gender = document.getElementById('gender').value;
         const age = parseInt(document.getElementById('age').value);
         const weight = parseFloat(document.getElementById('weight').value);
         const status = document.getElementById('status').value;
+        
+        // 檢查是否所有資訊都填寫了
+        if (!gender || !age || !weight || !status) { 
+            alert("請完整填寫性別、年齡、體重與狀態喔！"); 
+            return; 
+        }
 
         let coeff = (age <= 12) ? 55 : (age >= 65 ? 30 : (gender === 'male' ? 35 : 30));
         let base = weight * coeff;
         let add = {'weight_loss': 500, 'high_temp': 800, 'chronic_disease': 0}[status] || 0;
-        
         let target = (status === 'chronic_disease') ? 1200 : base + add;
         let limit = (status === 'chronic_disease') ? 1200 : (weight * 50) + add;
-
         config = { target, limit, date: new Date().toLocaleDateString() };
-        
         document.getElementById('amount').innerText = Math.round(target);
         document.getElementById('limitVal').innerText = Math.round(limit);
         document.getElementById('noteContent').innerText = getNote(status);
-        document.getElementById('limitBox').style.display = (status === 'chronic_disease') ? 'none' : 'block';
-
-        // 初始化杯子 (按建議量)
         const cupCount = Math.ceil(target / 250);
-        const grid = document.getElementById('cupsGrid');
-        grid.innerHTML = '';
-        drinkData = [];
+        const grid = document.getElementById('cupsGrid'); grid.innerHTML = ''; drinkData = [];
         for (let i = 0; i < cupCount; i++) { createCupElement(i); }
-
-        updateUI();
-        document.getElementById('result-area').style.display = 'block';
+        updateUI(); document.getElementById('result-area').style.display = 'block';
     }
-
     function createCupElement(index) {
         drinkData.push({ id: index, time: null, volume: 250 });
         const grid = document.getElementById('cupsGrid');
-        const cup = document.createElement('div');
-        cup.className = 'cup-item';
-        cup.id = `cup-${index}`;
+        const cup = document.createElement('div'); cup.className = 'cup-item'; cup.id = `cup-${index}`;
         cup.onclick = () => toggleCup(index);
         cup.innerHTML = `<div class="cup-icon"></div><span class="cup-time" id="time-${index}">--:--</span>`;
         grid.appendChild(cup);
     }
-
-    function addOneCup() {
-        createCupElement(drinkData.length);
-        // 新增杯子時不需要立刻 updateUI，等點擊杯子才更新總量
-    }
-
+    function addOneCup() { createCupElement(drinkData.length); }
     function toggleCup(index) {
         const item = document.getElementById(`cup-${index}`);
         const timeLabel = document.getElementById(`time-${index}`);
@@ -160,35 +113,19 @@
         }
         updateUI();
     }
-
     function updateUI() {
         const totalIntake = drinkData.reduce((sum, d) => sum + (d.time ? d.volume : 0), 0);
         document.getElementById('currentTotal').innerText = totalIntake;
-        
         let percentage = (totalIntake / config.target) * 100;
         document.getElementById('progressBar').style.width = Math.min(percentage, 100) + '%';
     }
-
     function getNote(status) {
-        const notes = {
-            'weight_loss': "💡 減肥補水：飯前30分鐘喝水能增加飽足感，並協助代謝脂肪殘餘物。",
-            'high_temp': "☀️ 高溫提醒：大量流汗時請分次補充，並適度補充鹽分防脫水。",
-            'chronic_disease': "⚠️ 醫囑優先：限水者請嚴格遵守醫師建議總量，避免造成心肺負擔。",
-            'adult': "💧 健康基準：口渴前先喝水，分次小口飲用效果最佳。"
-        };
+        const notes = {'weight_loss': "💡 減肥補水：飯前30分鐘喝水能增加飽足感。", 'high_temp': "☀️ 高溫提醒：請分次補充，並適度補充鹽分。", 'chronic_disease': "⚠️ 醫囑優先：限水者請嚴格遵守醫師建議總量。", 'adult': "💧 健康基準：口渴前先喝水，分次小口飲用效果最佳。"};
         return notes[status] || "保持水分充足，維持代謝健康。";
     }
-
     function exportLog() {
-        let csv = "\uFEFF飲水日誌,日期," + config.date + "\n建議目標," + Math.round(config.target) + "ml,健康上限," + Math.round(config.limit) + "ml\n\n杯次,容量,紀錄時間\n";
+        let csv = "\uFEFF飲水日誌,日期," + config.date + "\n建議目標," + Math.round(config.target) + "ml\n\n杯次,容量,紀錄時間\n";
         drinkData.forEach((d, i) => { if(d.time) csv += (i+1) + "," + d.volume + "ml," + d.time + "\n"; });
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", `飲水日誌_${config.date}.csv`);
-        link.click();
-    }
-</script>
-
-</body>
-</html>
+        const link = document.createElement("a"); link.href = URL.createObjectURL(blob);
+        link.setAttribute("download", `飲水日誌_${config.date}.
