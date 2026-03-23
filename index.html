@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>RURU-tracker Pro V5.0：客製化旗艦</title>
+    <title>RURU-tracker Pro V5.1：智慧連動版</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
@@ -31,11 +31,9 @@
         .progress-container { width: 100%; background-color: #e9ecef; border-radius: 10px; height: 12px; margin: 15px 0; overflow: hidden; }
         .progress-bar { height: 100%; background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); width: 0%; transition: width 0.8s ease-in-out; }
 
-        /* 智慧註解卡片 */
         .status-note-card { background: #fff; padding: 15px; border-radius: 15px; border-left: 6px solid var(--primary); margin-top: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); font-size: 0.9em; line-height: 1.6; }
         .status-note-card.success { border-left-color: var(--success); background-color: #f0fff4; }
 
-        /* 水杯視覺重塑：注水效果 */
         .cups-section { margin-top: 25px; padding: 20px; background: #fdfdfd; border-radius: 20px; border: 1px solid #eee; }
         .cups-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
         .cup-item { text-align: center; cursor: pointer; position: relative; }
@@ -49,13 +47,11 @@
         .cup-time { font-size: 0.6em; color: var(--primary); font-weight: bold; min-height: 1.2em; margin-top: 2px; }
 
         .add-cup-btn { background: #fff; border: 2px dashed #3498db; color: #3498db; padding: 10px; border-radius: 15px; cursor: pointer; font-size: 0.85em; font-weight: bold; width: 100%; transition: 0.2s; }
-        .add-cup-btn:hover { background: #f0f7ff; }
-
-        .total-box { margin-top: 20px; padding: 15px; background: #fff; border-radius: 18px; text-align: center; border: 1px solid #eee; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); }
+        .total-box { margin-top: 20px; padding: 15px; background: #fff; border-radius: 18px; text-align: center; border: 1px solid #eee; }
         .total-val { font-size: 2em; font-weight: 900; color: #0056b3; }
         
         .export-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
-        .export-btn { border: none; padding: 12px 5px; border-radius: 12px; color: white; font-weight: bold; font-size: 0.75em; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: 0.3s; }
+        .export-btn { border: none; padding: 12px 5px; border-radius: 12px; color: white; font-weight: bold; font-size: 0.75em; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .btn-excel { background: #2ecc71; } .btn-pdf { background: #e74c3c; } .btn-img { background: #f39c12; }
         
         .reset-link { font-size: 0.75em; color: #ccc; text-decoration: underline; margin-top: 20px; display: block; text-align: center; cursor: pointer; }
@@ -77,8 +73,8 @@
             <div class="group"><label>目前狀態</label><select id="status"><option value="" disabled selected>請選擇</option><option value="weight_loss">減肥期間</option><option value="adult">一般成人</option><option value="high_temp">高溫工作</option><option value="chronic_disease">限水患者</option></select></div>
         </div>
         <div class="form-row">
-            <div class="group"><label>每杯容量 (ml)</label><input type="number" id="cupSize" value="250"></div>
-            <div class="group"><label>每小時目標 (ml)</label><input type="number" id="hourlyGoal" placeholder="例如 200"></div>
+            <div class="group"><label>預設每杯 (ml)</label><input type="number" id="cupSize" value="250"></div>
+            <div class="group"><label>每小時目標 (ml)</label><input type="number" id="hourlyGoal" placeholder="選填"></div>
         </div>
         <button class="main-btn" onclick="initRURU()">開始今日計畫</button>
         
@@ -94,7 +90,7 @@
             
             <div class="cups-section">
                 <div class="cups-grid" id="cupsGrid"></div>
-                <button class="add-cup-btn" onclick="addOneCup()">＋ 新增一杯水</button>
+                <button class="add-cup-btn" id="addCupBtn" onclick="addOneCup()">＋ 新增一杯水</button>
             </div>
             
             <div class="total-box">
@@ -115,7 +111,7 @@
 
 <script>
     let drinkData = []; let config = {};
-    const STORAGE_KEY = 'RURU_WATER_V5_0';
+    const STORAGE_KEY = 'RURU_WATER_V5_1';
 
     window.onload = function() { loadSavedData(); };
 
@@ -124,22 +120,26 @@
         const ageVal = document.getElementById('age').value;
         const weightVal = document.getElementById('weight').value;
         const status = document.getElementById('status').value;
-        const cupSize = parseInt(document.getElementById('cupSize').value) || 250;
-        const hourlyGoal = document.getElementById('hourlyGoal').value;
+        const hourlyGoalInput = document.getElementById('hourlyGoal').value;
+        
+        // --- 智慧連動邏輯修正 ---
+        // 優先權：每小時目標 > 設定的每杯容量 > 預設 250
+        const activeCupSize = hourlyGoalInput ? parseInt(hourlyGoalInput) : (parseInt(document.getElementById('cupSize').value) || 250);
 
-        if (!gender || !ageVal || !weightVal || !status) { if(!isAutoLoad) alert("請完整填寫上方資訊喔！"); return; }
+        if (!gender || !ageVal || !weightVal || !status) { if(!isAutoLoad) alert("請完整填寫資訊喔！"); return; }
         
         const age = parseInt(ageVal); const weight = parseFloat(weightVal);
         let coeff = (age <= 12) ? 55 : (age >= 65 ? 30 : (gender === 'male' ? 35 : 30));
         let target = (status === 'chronic_disease') ? 1200 : (weight * coeff) + (status === 'weight_loss' ? 500 : (status === 'high_temp' ? 800 : 0));
         
-        config = { target, cupSize, hourlyGoal, date: new Date().toLocaleDateString() };
+        config = { target, activeCupSize, hourlyGoal: hourlyGoalInput, date: new Date().toLocaleDateString() };
         
         document.getElementById('amount').innerText = Math.round(target);
-        document.getElementById('hourlyDisplay').innerText = hourlyGoal ? `⏰ 每小時飲水目標：${hourlyGoal} ml` : "";
+        document.getElementById('hourlyDisplay').innerText = config.hourlyGoal ? `⏰ 每小時飲水目標：${config.hourlyGoal} ml` : "";
+        document.getElementById('addCupBtn').innerText = `＋ 手動新增 ${config.activeCupSize}ml`;
 
         if (!isAutoLoad) {
-            const cupCount = Math.ceil(target / cupSize);
+            const cupCount = Math.ceil(target / config.activeCupSize);
             const grid = document.getElementById('cupsGrid'); grid.innerHTML = ''; drinkData = [];
             for (let i = 0; i < cupCount; i++) { createCupElement(i); }
         }
@@ -153,11 +153,11 @@
         cup.onclick = () => toggleCup(index);
         cup.innerHTML = `
             <div class="cup-glass"><div class="cup-water"></div></div>
-            <span class="cup-label">${config.cupSize}ml</span>
+            <span class="cup-label">${config.activeCupSize}ml</span>
             <span class="cup-time" id="time-${index}">${savedTime || '--:--'}</span>
         `;
         grid.appendChild(cup);
-        if (!savedTime) drinkData.push({ id: index, time: null, volume: config.cupSize });
+        if (!savedTime) drinkData.push({ id: index, time: null, volume: config.activeCupSize });
     }
 
     function toggleCup(index) {
@@ -186,7 +186,7 @@
         });
     }
 
-    function addOneCup() { drinkData.push({ id: drinkData.length, time: null, volume: config.cupSize }); refreshCups(); updateUI(); saveToLocal(); }
+    function addOneCup() { drinkData.push({ id: drinkData.length, time: null, volume: config.activeCupSize }); refreshCups(); updateUI(); saveToLocal(); }
 
     function updateUI() {
         const totalIntake = drinkData.reduce((sum, d) => sum + (d.time ? d.volume : 0), 0);
@@ -205,7 +205,7 @@
         } else {
             const tips = {
                 'weight_loss': ["💡 脂肪代謝需要水分參與，缺水會讓減肥進入停滯期。", "💡 飯前30分鐘喝水，能顯著增加飽足感、減少進食量。"],
-                'adult': ["💡 大腦水分若減少 2%，記憶力與專注力就會開始下降。", "💡 規律補水能讓血液循環更順暢，精神更好。"],
+                'adult': ["💡 大腦水分若減少 2%，記憶力與專政力就會開始下降。", "💡 規律補水能讓血液循環更順暢，精神更好。"],
                 'high_temp': ["☀️ 高溫下流汗量大，請務必分次小口補水，預防熱衰竭。", "☀️ 每小時補水建議不超過 800ml，分次飲用吸收最好。"],
                 'chronic_disease': ["⚠️ 限水患者請嚴格遵照醫囑，建議使用有刻度的量杯。", "⚠️ 若感到口渴，可以用冰水漱口來緩解不適感。"]
             };
@@ -217,7 +217,7 @@
 
     function saveToLocal() {
         const payload = {
-            profile: { gender: document.getElementById('gender').value, age: document.getElementById('age').value, weight: document.getElementById('weight').value, status: document.getElementById('status').value, cupSize: config.cupSize, hourlyGoal: config.hourlyGoal },
+            profile: { gender: document.getElementById('gender').value, age: document.getElementById('age').value, weight: document.getElementById('weight').value, status: document.getElementById('status').value, cupSize: document.getElementById('cupSize').value, hourlyGoal: config.hourlyGoal },
             drinkData, config, lastUpdate: new Date().toLocaleDateString()
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -237,6 +237,7 @@
             config = data.config; drinkData = data.drinkData;
             document.getElementById('amount').innerText = Math.round(config.target);
             document.getElementById('hourlyDisplay').innerText = config.hourlyGoal ? `⏰ 每小時飲水目標：${config.hourlyGoal} ml` : "";
+            document.getElementById('addCupBtn').innerText = `＋ 手動新增 ${config.activeCupSize}ml`;
             refreshCups(); document.getElementById('result-area').style.display = 'block'; updateUI();
         }
     }
