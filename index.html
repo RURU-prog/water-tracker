@@ -4,50 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>RURU-tracker Pro：智慧知識版</title>
+    <title>RURU-tracker Pro V5.0：客製化旗艦</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root { --primary: #007bff; --secondary: #6c757d; --success: #28a745; --bg: #f4f7f6; --card-bg: #ffffff; }
+        :root { --primary: #007bff; --secondary: #6c757d; --success: #28a745; --water: #3498db; --bg: #f4f7f6; --card-bg: #ffffff; }
         body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background: linear-gradient(135deg, #e0f2fe 0%, #fdfbfb 100%); padding: 10px; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #333; }
         .container { width: 100%; max-width: 480px; }
-        .card { background: var(--card-bg); padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,123,255,0.1); border: 1px solid rgba(0,123,255,0.05); position: relative; }
-        h2 { color: var(--primary); text-align: center; margin-top: 0; margin-bottom: 20px; font-weight: 600; }
+        .card { background: var(--card-bg); padding: 25px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,123,255,0.1); border: 1px solid rgba(0,123,255,0.05); position: relative; }
+        h2 { color: var(--primary); text-align: center; margin-top: 0; margin-bottom: 20px; font-weight: 800; letter-spacing: 1px; }
+        
         .form-row { display: flex; gap: 10px; margin-bottom: 12px; }
         .group { flex: 1; }
-        label { display: block; font-size: 0.8em; font-weight: bold; margin-bottom: 5px; color: #495057; }
-        select, input { width: 100%; padding: 10px; border: 1px solid #e1e8ed; border-radius: 10px; box-sizing: border-box; font-size: 1em; background-color: white; }
-        .main-btn { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--primary) 0%, #00a8ff 100%); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1.1em; }
-        #result-area { display: none; margin-top: 20px; }
-        .core-display { text-align: center; margin-bottom: 15px; }
-        .result-amount { font-size: 2.8em; font-weight: 800; color: #0056b3; line-height: 1; }
-        .unit { font-size: 0.5em; color: var(--secondary); margin-left: 5px; }
-        .progress-container { width: 100%; background-color: #e9ecef; border-radius: 10px; height: 10px; margin: 15px 0; overflow: hidden; }
-        .progress-bar { height: 100%; background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); width: 0%; transition: width 0.4s; }
+        label { display: block; font-size: 0.75em; font-weight: bold; margin-bottom: 5px; color: #666; }
+        select, input { width: 100%; padding: 12px; border: 1px solid #e1e8ed; border-radius: 12px; box-sizing: border-box; font-size: 1em; background-color: #fafafa; transition: 0.3s; }
+        select:focus, input:focus { border-color: var(--primary); background-color: #fff; outline: none; }
+
+        .main-btn { width: 100%; padding: 16px; background: linear-gradient(45deg, var(--primary) 0%, #00a8ff 100%); color: white; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1.1em; box-shadow: 0 4px 15px rgba(0,123,255,0.3); }
         
-        /* 智慧註解卡片：加入動畫效果 */
-        .status-note-card { background: #fdfdfd; padding: 15px; border-radius: 12px; border-left: 5px solid var(--primary); margin-top: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); font-size: 0.9em; min-height: 50px; display: flex; align-items: center; transition: all 0.3s; }
+        #result-area { display: none; margin-top: 25px; animation: slideUp 0.5s ease; }
+        .core-display { text-align: center; margin-bottom: 20px; background: #f0f7ff; padding: 20px; border-radius: 20px; }
+        .result-amount { font-size: 3em; font-weight: 900; color: #0056b3; line-height: 1; }
+        .unit { font-size: 0.4em; color: var(--secondary); margin-left: 5px; }
+        .hourly-target { font-size: 0.85em; color: var(--primary); font-weight: bold; margin-top: 10px; }
+
+        .progress-container { width: 100%; background-color: #e9ecef; border-radius: 10px; height: 12px; margin: 15px 0; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); width: 0%; transition: width 0.8s ease-in-out; }
+
+        /* 智慧註解卡片 */
+        .status-note-card { background: #fff; padding: 15px; border-radius: 15px; border-left: 6px solid var(--primary); margin-top: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); font-size: 0.9em; line-height: 1.6; }
         .status-note-card.success { border-left-color: var(--success); background-color: #f0fff4; }
-        
-        .cups-section { margin-top: 25px; padding: 20px; background: #f8fbff; border-radius: 15px; border: 1px solid #e1f0ff; }
+
+        /* 水杯視覺重塑：注水效果 */
+        .cups-section { margin-top: 25px; padding: 20px; background: #fdfdfd; border-radius: 20px; border: 1px solid #eee; }
         .cups-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
-        .cup-item { text-align: center; cursor: pointer; }
-        .cup-icon { width: 42px; height: 50px; background: #d1ecf1; border: 2.5px solid var(--primary); border-radius: 5px 5px 12px 12px; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; position: relative; }
-        .cup-icon::after { content: '💧'; font-size: 1.1em; }
-        .cup-item.done .cup-icon { background: #adb5bd; border-color: #6c757d; }
-        .cup-item.done .cup-icon::after { content: '✅'; font-size: 0.9em; }
-        .cup-time { font-size: 0.7em; color: #999; display: block; min-height: 1.2em; }
-        .add-cup-btn { background: white; border: 2px dashed var(--primary); color: var(--primary); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9em; font-weight: bold; width: 100%; }
-        .total-box { margin-top: 20px; padding: 15px; background: white; border-radius: 12px; text-align: center; border: 1px solid #eee; }
-        .total-val { font-size: 1.8em; font-weight: 800; color: #0056b3; }
-        .export-section { margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px; }
-        .export-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .export-btn { border: none; padding: 10px 5px; border-radius: 8px; color: white; font-weight: bold; font-size: 0.75em; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .btn-excel { background-color: #28a745; }
-        .btn-pdf { background-color: #dc3545; }
-        .btn-img { background-color: #ff9f43; }
-        .reset-link { font-size: 0.7em; color: #ccc; text-decoration: underline; margin-top: 20px; display: block; text-align: center; cursor: pointer; }
-        .watermark { position: absolute; bottom: 10px; right: 20px; font-size: 0.6em; color: #ddd; display: none; }
+        .cup-item { text-align: center; cursor: pointer; position: relative; }
+        
+        .cup-glass { width: 45px; height: 55px; border: 3px solid #d1e3f8; border-radius: 6px 6px 15px 15px; margin: 0 auto 8px; position: relative; overflow: hidden; background: #fff; transition: 0.3s; }
+        .cup-water { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(to top, #3498db, #5dade2); transition: height 0.5s ease-in-out; }
+        .cup-item.done .cup-glass { border-color: #3498db; box-shadow: 0 0 10px rgba(52, 152, 219, 0.3); }
+        .cup-item.done .cup-water { height: 100%; }
+        
+        .cup-label { font-size: 0.65em; color: #999; font-weight: bold; display: block; }
+        .cup-time { font-size: 0.6em; color: var(--primary); font-weight: bold; min-height: 1.2em; margin-top: 2px; }
+
+        .add-cup-btn { background: #fff; border: 2px dashed #3498db; color: #3498db; padding: 10px; border-radius: 15px; cursor: pointer; font-size: 0.85em; font-weight: bold; width: 100%; transition: 0.2s; }
+        .add-cup-btn:hover { background: #f0f7ff; }
+
+        .total-box { margin-top: 20px; padding: 15px; background: #fff; border-radius: 18px; text-align: center; border: 1px solid #eee; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); }
+        .total-val { font-size: 2em; font-weight: 900; color: #0056b3; }
+        
+        .export-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
+        .export-btn { border: none; padding: 12px 5px; border-radius: 12px; color: white; font-weight: bold; font-size: 0.75em; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: 0.3s; }
+        .btn-excel { background: #2ecc71; } .btn-pdf { background: #e74c3c; } .btn-img { background: #f39c12; }
+        
+        .reset-link { font-size: 0.75em; color: #ccc; text-decoration: underline; margin-top: 20px; display: block; text-align: center; cursor: pointer; }
+        .watermark { position: absolute; bottom: 10px; right: 20px; font-size: 0.6em; color: #eee; display: none; }
+        
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -56,26 +70,31 @@
         <h2>RURU-tracker Pro</h2>
         <div class="form-row">
             <div class="group"><label>性別</label><select id="gender"><option value="" disabled selected>請選擇</option><option value="female">女性</option><option value="male">男性</option></select></div>
-            <div class="group"><label>年齡</label><input type="number" id="age" placeholder="輸入年齡"></div>
+            <div class="group"><label>年齡</label><input type="number" id="age" placeholder="歲數"></div>
         </div>
         <div class="form-row">
-            <div class="group"><label>體重 (kg)</label><input type="number" id="weight" placeholder="輸入體重"></div>
-            <div class="group"><label>狀態</label><select id="status"><option value="" disabled selected>請選擇</option><option value="weight_loss">減肥期間</option><option value="adult">一般成人</option><option value="high_temp">高溫工作</option><option value="chronic_disease">限水患者</option></select></div>
+            <div class="group"><label>體重 (kg)</label><input type="number" id="weight" placeholder="kg"></div>
+            <div class="group"><label>目前狀態</label><select id="status"><option value="" disabled selected>請選擇</option><option value="weight_loss">減肥期間</option><option value="adult">一般成人</option><option value="high_temp">高溫工作</option><option value="chronic_disease">限水患者</option></select></div>
+        </div>
+        <div class="form-row">
+            <div class="group"><label>每杯容量 (ml)</label><input type="number" id="cupSize" value="250"></div>
+            <div class="group"><label>每小時目標 (ml)</label><input type="number" id="hourlyGoal" placeholder="例如 200"></div>
         </div>
         <button class="main-btn" onclick="initRURU()">開始今日計畫</button>
         
         <div id="result-area">
             <div class="core-display">
-                <span style="font-size:0.8em; color:var(--primary); font-weight:bold;">建議每日目標</span><br>
+                <span style="font-size:0.85em; color:var(--primary); font-weight:bold;">建議每日目標總量</span><br>
                 <span class="result-amount" id="amount">--</span><span class="unit">ml</span>
+                <div class="hourly-target" id="hourlyDisplay"></div>
             </div>
-            <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
             
-            <div class="status-note-card" id="noteContent">載入中...</div>
+            <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+            <div class="status-note-card" id="noteContent"></div>
             
             <div class="cups-section">
                 <div class="cups-grid" id="cupsGrid"></div>
-                <button class="add-cup-btn" onclick="addOneCup()">＋ 手動新增 250ml</button>
+                <button class="add-cup-btn" onclick="addOneCup()">＋ 新增一杯水</button>
             </div>
             
             <div class="total-box">
@@ -83,14 +102,12 @@
                 <span class="total-val" id="currentTotal">0</span> <small>ml</small>
             </div>
 
-            <div class="export-section" id="export-ui">
-                <div class="export-grid">
-                    <button class="export-btn btn-excel" onclick="exportExcel()"><span>📊</span>EXCEL</button>
-                    <button class="export-btn btn-pdf" onclick="exportPDF()"><span>📄</span>PDF</button>
-                    <button class="export-btn btn-img" onclick="exportImage()"><span>🖼️</span>下載圖檔</button>
-                </div>
+            <div class="export-grid" id="export-ui">
+                <button class="export-btn btn-excel" onclick="exportExcel()"><span>📊</span>EXCEL</button>
+                <button class="export-btn btn-pdf" onclick="exportPDF()"><span>📄</span>PDF</button>
+                <button class="export-btn btn-img" onclick="exportImage()"><span>🖼️</span>圖檔下載</button>
             </div>
-            <span class="reset-link" id="reset-ui" onclick="clearAllData()">🗑️ 重設所有紀錄</span>
+            <span class="reset-link" id="reset-ui" onclick="clearAllData()">🗑️ 重設紀錄</span>
         </div>
         <div class="watermark" id="watermark">Created by RURU-prog</div>
     </div>
@@ -98,7 +115,7 @@
 
 <script>
     let drinkData = []; let config = {};
-    const STORAGE_KEY = 'RURU_WATER_LOG';
+    const STORAGE_KEY = 'RURU_WATER_V5_0';
 
     window.onload = function() { loadSavedData(); };
 
@@ -107,14 +124,22 @@
         const ageVal = document.getElementById('age').value;
         const weightVal = document.getElementById('weight').value;
         const status = document.getElementById('status').value;
-        if (!gender || !ageVal || !weightVal || !status) { if(!isAutoLoad) alert("請填寫資訊喔！"); return; }
+        const cupSize = parseInt(document.getElementById('cupSize').value) || 250;
+        const hourlyGoal = document.getElementById('hourlyGoal').value;
+
+        if (!gender || !ageVal || !weightVal || !status) { if(!isAutoLoad) alert("請完整填寫上方資訊喔！"); return; }
+        
         const age = parseInt(ageVal); const weight = parseFloat(weightVal);
         let coeff = (age <= 12) ? 55 : (age >= 65 ? 30 : (gender === 'male' ? 35 : 30));
         let target = (status === 'chronic_disease') ? 1200 : (weight * coeff) + (status === 'weight_loss' ? 500 : (status === 'high_temp' ? 800 : 0));
-        config = { target, date: new Date().toLocaleDateString() };
+        
+        config = { target, cupSize, hourlyGoal, date: new Date().toLocaleDateString() };
+        
         document.getElementById('amount').innerText = Math.round(target);
+        document.getElementById('hourlyDisplay').innerText = hourlyGoal ? `⏰ 每小時飲水目標：${hourlyGoal} ml` : "";
+
         if (!isAutoLoad) {
-            const cupCount = Math.ceil(target / 250);
+            const cupCount = Math.ceil(target / cupSize);
             const grid = document.getElementById('cupsGrid'); grid.innerHTML = ''; drinkData = [];
             for (let i = 0; i < cupCount; i++) { createCupElement(i); }
         }
@@ -126,16 +151,25 @@
         const grid = document.getElementById('cupsGrid');
         const cup = document.createElement('div'); cup.className = 'cup-item' + (savedTime ? ' done' : ''); cup.id = `cup-${index}`;
         cup.onclick = () => toggleCup(index);
-        cup.innerHTML = `<div class="cup-icon"></div><span class="cup-time">${savedTime || '--:--'}</span>`;
+        cup.innerHTML = `
+            <div class="cup-glass"><div class="cup-water"></div></div>
+            <span class="cup-label">${config.cupSize}ml</span>
+            <span class="cup-time" id="time-${index}">${savedTime || '--:--'}</span>
+        `;
         grid.appendChild(cup);
-        if (!savedTime) drinkData.push({ id: index, time: null, volume: 250 });
+        if (!savedTime) drinkData.push({ id: index, time: null, volume: config.cupSize });
     }
 
     function toggleCup(index) {
+        const item = document.getElementById(`cup-${index}`);
+        const timeLabel = document.getElementById(`time-${index}`);
         if (!drinkData[index].time) {
-            drinkData[index].time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        } else { drinkData[index].time = null; }
-        refreshCups(); updateUI(); saveToLocal();
+            const now = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            drinkData[index].time = now; item.classList.add('done'); timeLabel.innerText = now;
+        } else {
+            drinkData[index].time = null; item.classList.remove('done'); timeLabel.innerText = '--:--';
+        }
+        updateUI(); saveToLocal();
     }
 
     function refreshCups() {
@@ -143,101 +177,48 @@
         drinkData.forEach((d, i) => {
             const cup = document.createElement('div'); cup.className = 'cup-item' + (d.time ? ' done' : '');
             cup.onclick = () => toggleCup(i);
-            cup.innerHTML = `<div class="cup-icon"></div><span class="cup-time">${d.time || '--:--'}</span>`;
+            cup.innerHTML = `
+                <div class="cup-glass"><div class="cup-water"></div></div>
+                <span class="cup-label">${d.volume}ml</span>
+                <span class="cup-time">${d.time || '--:--'}</span>
+            `;
             grid.appendChild(cup);
         });
     }
 
-    function addOneCup() { drinkData.push({ id: drinkData.length, time: null, volume: 250 }); refreshCups(); updateUI(); saveToLocal(); }
+    function addOneCup() { drinkData.push({ id: drinkData.length, time: null, volume: config.cupSize }); refreshCups(); updateUI(); saveToLocal(); }
 
     function updateUI() {
         const totalIntake = drinkData.reduce((sum, d) => sum + (d.time ? d.volume : 0), 0);
         document.getElementById('currentTotal').innerText = totalIntake;
-        const percentage = (totalIntake / config.target) * 100;
-        document.getElementById('progressBar').style.width = Math.min(percentage, 100) + '%';
-        
-        // 更新智慧註解
-        updateSmartNote(percentage);
+        const percent = (totalIntake / config.target) * 100;
+        document.getElementById('progressBar').style.width = Math.min(percent, 100) + '%';
+        updateSmartNote(percent);
     }
 
     function updateSmartNote(percent) {
         const noteEl = document.getElementById('noteContent');
         const status = document.getElementById('status').value;
-        
-        // 1. 達標期 (100%+)
         if (percent >= 100) {
-            noteEl.innerHTML = "🎉 <b>今日目標已達成！</b><br>您的細胞現在充滿能量，水分充足能有效提升代謝。繼續保持！";
+            noteEl.innerHTML = "🎉 <b>今日目標已達成！</b><br>您目前身體水分充足，代謝力正處於巔峰狀態！";
             noteEl.classList.add('success');
-            return;
+        } else {
+            const tips = {
+                'weight_loss': ["💡 脂肪代謝需要水分參與，缺水會讓減肥進入停滯期。", "💡 飯前30分鐘喝水，能顯著增加飽足感、減少進食量。"],
+                'adult': ["💡 大腦水分若減少 2%，記憶力與專注力就會開始下降。", "💡 規律補水能讓血液循環更順暢，精神更好。"],
+                'high_temp': ["☀️ 高溫下流汗量大，請務必分次小口補水，預防熱衰竭。", "☀️ 每小時補水建議不超過 800ml，分次飲用吸收最好。"],
+                'chronic_disease': ["⚠️ 限水患者請嚴格遵照醫囑，建議使用有刻度的量杯。", "⚠️ 若感到口渴，可以用冰水漱口來緩解不適感。"]
+            };
+            const currentTips = tips[status] || tips['adult'];
+            noteEl.innerHTML = percent >= 75 ? "🚀 快達標了！剩下最後幾小口，加油！" : currentTips[Math.floor(Math.random() * currentTips.length)];
+            noteEl.classList.remove('success');
         }
-        noteEl.classList.remove('success');
-
-        // 2. 衝刺期 (75% - 99%)
-        if (percent >= 75) {
-            const cheers = ["快達標了！剩下最後幾小口，加油！", "身體正在感謝妳，就快完成今天的飲水任務了！", "妳今天表現得超棒！再一杯就圓滿成功。"];
-            noteEl.innerHTML = "🚀 " + cheers[Math.floor(Math.random() * cheers.length)];
-            return;
-        }
-
-        // 3. 知識期 (0% - 75%)
-        const weightTips = [
-            "💡 飯前 30 分鐘喝水，平均能減少 13% 的熱量攝取。",
-            "💡 喝冰水其實能稍微提升代謝，因為身體需要產熱來平衡體溫。",
-            "💡 代謝 1 公斤的脂肪，需要約 7 公升的水分參與化學反應。"
-        ];
-        const healthTips = [
-            "💡 大腦有 75% 是水，水分不足會讓注意力下降、容易疲勞。",
-            "💡 皮膚的彈性來自基底層的水分，補水比擦乳液更有感。",
-            "💡 身體缺水會導致血液變濃稠，讓心臟負擔變大喔。"
-        ];
-        
-        const currentTips = (status === 'weight_loss') ? weightTips : healthTips;
-        noteEl.innerHTML = currentTips[Math.floor(Math.random() * currentTips.length)];
-    }
-
-    function prepareForCapture(show) {
-        document.getElementById('export-ui').style.display = show ? 'none' : 'block';
-        document.getElementById('reset-ui').style.display = show ? 'none' : 'block';
-        document.getElementById('watermark').style.display = show ? 'block' : 'none';
-    }
-
-    function exportImage() {
-        prepareForCapture(true);
-        html2canvas(document.querySelector("#main-card"), { scale: 2, backgroundColor: "#f4f7f6" }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = `RURU飲水圖檔_${config.date.replace(/\//g,'_')}.jpg`;
-            link.href = canvas.toDataURL("image/jpeg", 0.9);
-            link.click();
-            prepareForCapture(false);
-        });
-    }
-
-    async function exportPDF() {
-        prepareForCapture(true);
-        const canvas = await html2canvas(document.querySelector("#main-card"), { scale: 2 });
-        const imgData = canvas.toDataURL('image/png');
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        pdf.text("RURU-tracker 個人飲水日誌", 10, 15);
-        pdf.addImage(imgData, 'PNG', 10, 20, pdfWidth, pdfHeight);
-        pdf.save(`RURU飲水報告_${config.date.replace(/\//g,'_')}.pdf`);
-        prepareForCapture(false);
-    }
-
-    function exportExcel() {
-        let csv = "\uFEFF日期," + config.date + "\n目標," + Math.round(config.target) + "ml\n累積," + document.getElementById('currentTotal').innerText + "ml\n\n杯次,容量,紀錄時間\n";
-        drinkData.forEach((d, i) => { if(d.time) csv += (i+1) + "," + d.volume + "ml," + d.time + "\n"; });
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a"); link.href = URL.createObjectURL(blob);
-        link.download = `RURU飲水紀錄_${config.date.replace(/\//g,'_')}.csv`; link.click();
     }
 
     function saveToLocal() {
         const payload = {
-            profile: { gender: document.getElementById('gender').value, age: document.getElementById('age').value, weight: document.getElementById('weight').value, status: document.getElementById('status').value },
-            drinkData: drinkData, config: config, lastUpdate: new Date().toLocaleDateString()
+            profile: { gender: document.getElementById('gender').value, age: document.getElementById('age').value, weight: document.getElementById('weight').value, status: document.getElementById('status').value, cupSize: config.cupSize, hourlyGoal: config.hourlyGoal },
+            drinkData, config, lastUpdate: new Date().toLocaleDateString()
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     }
@@ -250,14 +231,52 @@
         document.getElementById('age').value = data.profile.age;
         document.getElementById('weight').value = data.profile.weight;
         document.getElementById('status').value = data.profile.status;
+        document.getElementById('cupSize').value = data.profile.cupSize || 250;
+        document.getElementById('hourlyGoal').value = data.profile.hourlyGoal || "";
         if (data.lastUpdate === new Date().toLocaleDateString()) {
             config = data.config; drinkData = data.drinkData;
             document.getElementById('amount').innerText = Math.round(config.target);
+            document.getElementById('hourlyDisplay').innerText = config.hourlyGoal ? `⏰ 每小時飲水目標：${config.hourlyGoal} ml` : "";
             refreshCups(); document.getElementById('result-area').style.display = 'block'; updateUI();
         }
     }
 
     function clearAllData() { if (confirm("確定重設今日紀錄？")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
+
+    function prepareForCapture(show) {
+        document.getElementById('export-ui').style.display = show ? 'none' : 'grid';
+        document.getElementById('reset-ui').style.display = show ? 'none' : 'block';
+        document.getElementById('watermark').style.display = show ? 'block' : 'none';
+    }
+
+    function exportImage() {
+        prepareForCapture(true);
+        html2canvas(document.querySelector("#main-card"), { scale: 2, backgroundColor: "#f4f7f6" }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `RURU飲水圖檔_${config.date.replace(/\//g,'_')}.jpg`;
+            link.href = canvas.toDataURL("image/jpeg", 0.9);
+            link.click(); prepareForCapture(false);
+        });
+    }
+
+    async function exportPDF() {
+        prepareForCapture(true);
+        const canvas = await html2canvas(document.querySelector("#main-card"), { scale: 2 });
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        pdf.text("RURU-tracker 個人飲水日誌", 10, 15);
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 20, 190, (canvas.height * 190) / canvas.width);
+        pdf.save(`RURU飲水報告_${config.date.replace(/\//g,'_')}.pdf`);
+        prepareForCapture(false);
+    }
+
+    function exportExcel() {
+        let csv = "\uFEFF日期," + config.date + "\n目標," + Math.round(config.target) + "ml\n\n杯次,容量,紀錄時間\n";
+        drinkData.forEach((d, i) => { if(d.time) csv += (i+1) + "," + d.volume + "ml," + d.time + "\n"; });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a"); link.href = URL.createObjectURL(blob);
+        link.download = `RURU飲水紀錄_${config.date.replace(/\//g,'_')}.csv`; link.click();
+    }
 </script>
 </body>
 </html>
