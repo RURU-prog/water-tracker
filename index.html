@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>RURU-tracker Pro V7.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -12,58 +11,57 @@
         body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background: #f0f4f8; padding: 10px; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #333; -webkit-tap-highlight-color: transparent; }
         .container { width: 100%; max-width: 480px; }
         .card { background: var(--card-bg); padding: 25px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
-        h2 { color: #0056b3; text-align: center; margin-top: 0; margin-bottom: 20px; font-weight: 800; letter-spacing: 1px; }
+        h2 { color: #0056b3; text-align: center; margin-top: 0; margin-bottom: 20px; font-weight: 800; }
         .form-row { display: flex; gap: 10px; margin-bottom: 12px; }
         .group { flex: 1; }
         label { display: block; font-size: 0.75em; font-weight: bold; margin-bottom: 5px; color: #555; }
-        select, input { width: 100%; padding: 12px; border: 1.5px solid #ccc; border-radius: 12px; box-sizing: border-box; font-size: 1em; background-color: #fff; color: #000; outline: none; transition: border 0.3s; }
-        select:focus, input:focus { border-color: var(--primary); }
-        .main-btn { width: 100%; padding: 16px; background: linear-gradient(45deg, #007bff, #00a8ff); color: white; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1.1em; box-shadow: 0 4px 15px rgba(0,123,255,0.3); }
+        select, input { width: 100%; padding: 12px; border: 1.5px solid #ccc; border-radius: 12px; box-sizing: border-box; font-size: 1em; background-color: #fff; color: #000; outline: none; }
+        .main-btn { width: 100%; padding: 16px; background: linear-gradient(45deg, #007bff, #00a8ff); color: white; border: none; border-radius: 15px; font-weight: bold; font-size: 1.1em; margin-top: 10px; box-shadow: 0 4px 15px rgba(0,123,255,0.3); }
         
         #result-area { display: none; margin-top: 25px; }
         .core-display { text-align: center; margin-bottom: 20px; background: #f8fbff; padding: 20px; border-radius: 20px; border: 2.5px solid #d1e3f8; }
         .result-amount { font-size: 3.2em; font-weight: 900; color: #004085; line-height: 1; }
-        .limit-box { font-size: 0.8em; color: var(--danger); font-weight: bold; margin-top: 5px; transition: 0.3s; padding: 4px; border-radius: 8px; }
+        .limit-box { font-size: 0.8em; color: var(--danger); font-weight: bold; margin-top: 5px; padding: 4px; border-radius: 8px; }
         .limit-box.warning { color: #fff; background: var(--danger); animation: blink 1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
         
-        .hourly-target { font-size: 0.85em; color: #007bff; font-weight: bold; margin-top: 8px; display: block; }
         .progress-container { width: 100%; background-color: #e9ecef; border-radius: 10px; height: 14px; margin: 15px 0; overflow: hidden; border: 1.5px solid #ddd; }
         .progress-bar { height: 100%; background: linear-gradient(90deg, #4facfe, #00f2fe); width: 0%; transition: width 1s; }
-        .status-note-card { background: #fff; padding: 15px; border-radius: 15px; border: 1.5px solid #eee; border-left: 6px solid #007bff; margin-top: 10px; font-size: 0.9em; line-height: 1.6; color: #222; min-height: 54px; box-sizing: border-box; }
+        .status-note-card { background: #fff; padding: 15px; border-radius: 15px; border: 1.5px solid #eee; border-left: 6px solid #007bff; margin-top: 10px; font-size: 0.9em; min-height: 54px; }
         .status-note-card.success { border-left-color: var(--success); background-color: #f0fff4; }
-        .status-note-card.danger { border-left-color: var(--danger); background-color: #fff5f5; border-color: #ffcccc; }
+        .status-note-card.danger { border-left-color: var(--danger); background-color: #fff5f5; }
 
         .cups-section { margin-top: 20px; padding: 15px; background: #fff; border-radius: 20px; border: 1.5px solid #eee; }
         .cups-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 15px; }
-        .cup-item { text-align: center; cursor: pointer; -webkit-user-select: none; }
+        .cup-item { text-align: center; cursor: pointer; }
         .cup-glass { width: 42px; height: 52px; border: 2.5px solid #999; border-radius: 5px 5px 12px 12px; margin: 0 auto 5px; position: relative; overflow: hidden; background: #fff; }
-        .cup-water { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(to top, #3498db, #5dade2); transition: height 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
+        .cup-water { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(to top, #3498db, #5dade2); transition: height 0.6s; }
         .cup-item.done .cup-glass { border-color: #0056b3; }
         .cup-item.done .cup-water { height: 100%; }
         .cup-label { font-size: 0.7em; color: #444; font-weight: bold; display: block; }
         .cup-time { font-size: 0.65em; color: #007bff; font-weight: 800; min-height: 1.2em; margin-top: 2px; }
-        .add-cup-btn { background: #fff; border: 2px dashed #007bff; color: #007bff; padding: 12px; border-radius: 12px; cursor: pointer; font-size: 0.85em; font-weight: bold; width: 100%; }
+        .add-cup-btn { background: #fff; border: 2px dashed #007bff; color: #007bff; padding: 12px; border-radius: 12px; font-size: 0.85em; font-weight: bold; width: 100%; cursor: pointer; }
+        
         .total-box { margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 15px; text-align: center; border: 2px solid #eee; }
         .total-val { font-size: 2.2em; font-weight: 900; color: #004085; }
         .history-wall { margin-top: 20px; padding: 12px; background: #fff; border-radius: 15px; border: 1.5px solid #eee; }
-        .history-title { font-size: 0.75em; font-weight: bold; color: #666; margin-bottom: 8px; display: block; text-align: center; }
-        .history-dots { display: flex; justify-content: center; gap: 8px; }
+        .history-dots { display: flex; justify-content: center; gap: 8px; margin-top: 8px; }
         .dot { width: 10px; height: 10px; border-radius: 50%; background: #ddd; position: relative; }
-        .dot.achieved { background: #28a745; border: 1px solid #1e7e34; }
+        .dot.achieved { background: #28a745; }
         .dot::after { content: attr(data-date); position: absolute; top: 15px; left: 50%; transform: translateX(-50%); font-size: 7px; color: #888; }
         
-        /* 圖檔下載專用區域 */
-        .export-single { margin-top: 20px; padding-top: 15px; border-top: 2px solid #eee; text-align: center; }
-        .btn-img-full { width: 100%; background: #f39c12; color: white; border: none; padding: 16px; border-radius: 15px; font-weight: bold; font-size: 1em; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 12px rgba(243,156,18,0.3); }
+        /* 導出按鈕 - 醒目橘色 */
+        .export-area { margin-top: 20px; padding-top: 15px; border-top: 2px solid #eee; }
+        .btn-export { width: 100%; background: #f39c12; color: white; border: none; padding: 16px; border-radius: 15px; font-weight: bold; font-size: 1.05em; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(243,156,18,0.3); }
+
+        .reset-link { font-size: 0.8em; color: #bbb; margin-top: 20px; display: block; text-align: center; cursor: pointer; text-decoration: underline; }
         
-        .reset-link { font-size: 0.8em; color: #bbb; text-decoration: none; margin-top: 20px; display: block; text-align: center; cursor: pointer; }
-        #img-preview-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; padding: 20px; box-sizing: border-box; }
-        #preview-img { max-width: 100%; max-height: 80%; border-radius: 12px; border: 3px solid #fff; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        .preview-tip { color: white; margin-bottom: 15px; font-weight: bold; text-align: center; font-size: 1.1em; line-height: 1.5; }
-        .close-preview { margin-top: 20px; background: #fff; border: none; padding: 12px 40px; border-radius: 25px; font-weight: bold; font-size: 1em; }
-        .footer-info { margin-top: 25px; text-align: center; font-size: 0.65em; color: #ccc; letter-spacing: 2px; }
-        .watermark { text-align: right; font-size: 0.6em; color: #999; margin-top: 10px; display: none; font-style: italic; }
+        /* 預覽遮罩 */
+        #preview-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; padding: 20px; box-sizing: border-box; }
+        #preview-img { max-width: 100%; max-height: 80%; border-radius: 12px; border: 2px solid #fff; }
+        .close-btn { margin-top: 20px; background: #fff; border: none; padding: 10px 30px; border-radius: 20px; font-weight: bold; }
+        .preview-tip { color: white; margin-bottom: 10px; font-weight: bold; text-align: center; }
+        .watermark { text-align: right; font-size: 0.6em; color: #999; margin-top: 5px; display: none; }
     </style>
 </head>
 <body>
@@ -87,9 +85,9 @@
         <div id="result-area">
             <div class="core-display">
                 <span style="font-size:0.85em; color:#007bff; font-weight:bold;">建議每日目標總量</span><br>
-                <span class="result-amount" id="amount">--</span><span style="font-size:0.4em; font-weight:bold; margin-left:5px;">ml</span><br>
+                <span class="result-amount" id="amount">--</span><span style="font-size: 0.5em; font-weight: bold; margin-left: 5px;">ml</span><br>
                 <div class="limit-box" id="limitBox">📈 健康上限：<span id="limitVal">--</span> ml</div>
-                <div class="hourly-target" id="hourlyDisplay"></div>
+                <div id="hourlyDisplay" style="font-size:0.85em; color:#007bff; font-weight:bold; margin-top:8px;"></div>
             </div>
             <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
             <div class="status-note-card" id="noteContent"></div>
@@ -101,29 +99,31 @@
                 <div style="font-size:0.8em; color:#666; margin-bottom:5px;">今日已累計飲用</div>
                 <span class="total-val" id="currentTotal">0</span> <small>ml</small>
             </div>
-            <div class="history-wall"><span class="history-title">最近 7 日達成狀況</span><div class="history-dots" id="historyDots"></div></div>
-            
-            <div class="export-single" id="export-ui">
-                <button class="btn-img-full" onclick="exportImage()">📸 產生今日飲水成就圖</button>
+            <div class="history-wall">
+                <span style="font-size:0.75em; font-weight:bold; color:#666; display:block; text-align:center;">最近 7 日達成狀況</span>
+                <div class="history-dots" id="historyDots"></div>
             </div>
-            <span class="reset-link" id="reset-ui" onclick="clearAllData()">🗑️ 重設所有紀錄</span>
+            <div class="export-area" id="export-ui">
+                <button class="btn-export" onclick="exportImage()">📸 產生今日飲水成就圖</button>
+            </div>
+            <span class="reset-link" id="reset-ui" onclick="clearAllData()">🗑️ 重設紀錄</span>
             <div class="watermark" id="watermark">Created by RURU-prog</div>
         </div>
-        <div class="footer-info">VERSION 7.0 (MOBILE OPTIMIZED)</div>
+        <div style="margin-top:20px; text-align:center; font-size:0.65em; color:#ccc;">VERSION 7.0 (MOBILE STABLE)</div>
     </div>
 </div>
 
-<div id="img-preview-overlay">
+<div id="preview-overlay">
     <div class="preview-tip">✨ 飲水海報已產生！<br>請【長按圖片】儲存至相簿</div>
     <img id="preview-img" src="">
-    <button class="close-preview" onclick="closePreview()">關閉預覽</button>
+    <button class="close-btn" onclick="closePreview()">關閉預覽</button>
 </div>
 
 <script>
     let drinkData = []; let config = {};
     const STORAGE_KEY = 'RURU_WATER_V7_0';
     const HISTORY_KEY = 'RURU_WATER_HISTORY';
-    
+
     window.onload = function() { loadSavedData(); renderHistory(); };
 
     function initRURU(isAutoLoad = false) {
@@ -134,24 +134,23 @@
         const hourlyGoal = document.getElementById('hourlyGoal').value;
         const activeCupSize = hourlyGoal ? parseInt(hourlyGoal) : (parseInt(document.getElementById('cupSize').value) || 250);
 
-        if (!gender || !ageVal || !weightVal || !status) { if(!isAutoLoad) alert("請完整填寫生理資料喔！"); return; }
+        if (!gender || !ageVal || !weightVal || !status) { if(!isAutoLoad) alert("請填寫完整喔！"); return; }
         
         const age = parseInt(ageVal); const weight = parseFloat(weightVal);
         let target = (status === 'chronic_disease') ? 1200 : (weight * (age <= 12 ? 55 : (age >= 65 ? 30 : (gender === 'male' ? 35 : 30)))) + (status === 'weight_loss' ? 500 : (status === 'high_temp' ? 800 : 0));
         let limit = (status === 'chronic_disease') ? 1200 : (weight * 50) + (status === 'weight_loss' ? 500 : (status === 'high_temp' ? 800 : 0));
         
         config = { target, limit, activeCupSize, hourlyGoal, date: new Date().toLocaleDateString() };
-        
         document.getElementById('amount').innerText = Math.round(target);
         document.getElementById('limitVal').innerText = Math.round(limit);
-        document.getElementById('hourlyDisplay').innerText = hourlyGoal ? `⏰ 每小時補水目標：${hourlyGoal} ml` : "";
+        document.getElementById('hourlyDisplay').innerText = hourlyGoal ? `⏰ 每小時目標：${hourlyGoal} ml` : "";
         document.getElementById('addCupBtn').innerText = `＋ 手動新增 ${activeCupSize}ml`;
         
         if (!isAutoLoad) {
             const grid = document.getElementById('cupsGrid');
             grid.innerHTML = ''; drinkData = [];
-            const cupCount = Math.ceil(target / activeCupSize);
-            for (let i = 0; i < cupCount; i++) { createCupElement(i); }
+            const count = Math.ceil(target / activeCupSize);
+            for (let i = 0; i < count; i++) { createCupElement(i); }
         }
         document.getElementById('result-area').style.display = 'block';
         updateUI(); saveToLocal();
@@ -206,12 +205,10 @@
         }
 
         if (percent >= 100 && !window.hasCelebrated) {
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 1000 });
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             window.hasCelebrated = true;
             updateHistory(true);
-        } else if (percent < 100) {
-            window.hasCelebrated = false;
-        }
+        } else if (percent < 100) { window.hasCelebrated = false; }
         updateSmartNote(total);
     }
 
@@ -219,16 +216,15 @@
         const noteEl = document.getElementById('noteContent');
         const status = document.getElementById('status').value;
         const percent = (total / config.target) * 100;
-        
         if (total > config.limit) {
-            noteEl.innerHTML = "⚠️ <b>安全警告：飲水已達極限！</b><br>過量飲水可能造成身體負擔。若感到頭暈，請停止補水並及時休息。";
+            noteEl.innerHTML = "⚠️ <b>警示：飲水已達極限！</b><br>請暫停補水，過量飲水可能造成身體負擔。";
             noteEl.className = "status-note-card danger";
         } else if (percent >= 100) {
-            noteEl.innerHTML = "🎉 <b>今日目標已達成！</b><br>妳的細胞現在非常水潤，代謝力處於巔峰狀態！";
+            noteEl.innerHTML = "🎉 <b>今日目標已達成！</b><br>妳的代謝力正處於巔峰狀態！";
             noteEl.className = "status-note-card success";
         } else {
-            const tips = { 'weight_loss': ["💡 飯前30分鐘喝水，能顯著增加飽足感。", "💡 脂肪代謝需要水分參與，補水能加速燃脂。"], 'adult': ["💡 大腦缺水 2%，專注力就會開始下降。", "💡 規律補水能讓皮膚更有光澤。"], 'high_temp': ["☀️ 高溫環境下，請務必分次小口補水。", "☀️ 感到口渴時，身體已處於輕微脫水狀態。"], 'chronic_disease': ["⚠️ 限水患者請嚴格遵照醫囑。", "⚠️ 可用噴霧或冰塊稍微濕潤口腔。"] };
-            noteEl.innerHTML = percent >= 75 ? "🚀 快達標了！妳的堅持正在改變身體！" : (tips[status] || tips['adult'])[Math.floor(Math.random() * 2)];
+            const tips = { 'weight_loss': ["💡 飯前 30 分鐘喝水，能顯著增加飽足感。", "💡 脂肪代謝需要水分參與，補水能加速燃脂。"], 'adult': ["💡 大腦缺水 2%，專注力就會開始下降。", "💡 補水能讓皮膚更有光澤，改善氣色。"], 'high_temp': ["☀️ 高溫下補水請分次小口，效果更好。", "☀️ 感到口渴時，身體已處於輕微脫水狀態。"], 'chronic_disease': ["⚠️ 限水患者請嚴格遵照醫囑。", "⚠️ 可用冰塊稍微濕潤口腔緩解渴感。"] };
+            noteEl.innerHTML = percent >= 75 ? "🚀 離達標只剩最後一哩路，加油！" : (tips[status] || tips['adult'])[Math.floor(Math.random() * 2)];
             noteEl.className = "status-note-card";
         }
     }
@@ -269,14 +265,12 @@
         document.getElementById('status').value = data.profile.status;
         document.getElementById('cupSize').value = data.profile.cupSize || 250;
         document.getElementById('hourlyGoal').value = data.profile.hourlyGoal || "";
-        
         if (data.lastUpdate === new Date().toLocaleDateString()) {
             config = data.config; drinkData = data.drinkData;
             document.getElementById('amount').innerText = Math.round(config.target);
             document.getElementById('limitVal').innerText = Math.round(config.limit || 0);
             document.getElementById('hourlyDisplay').innerText = config.hourlyGoal ? `⏰ 每小時目標：${config.hourlyGoal} ml` : "";
-            const grid = document.getElementById('cupsGrid');
-            grid.innerHTML = '';
+            const grid = document.getElementById('cupsGrid'); grid.innerHTML = '';
             drinkData.forEach((d, i) => { createCupElement(i, d.time); });
             document.getElementById('result-area').style.display = 'block';
             updateUI();
@@ -286,40 +280,44 @@
     function clearAllData() { if (confirm("確定重設今日紀錄？")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
 
     function exportImage() {
-        const card = document.querySelector("#main-card");
+        const container = document.getElementById('capture-container');
         const exportUI = document.getElementById('export-ui');
         const resetUI = document.getElementById('reset-ui');
         const watermark = document.getElementById('watermark');
         
-        // 隱藏非必要 UI 以便截圖
-        exportUI.style.visibility = 'hidden';
-        resetUI.style.visibility = 'hidden';
+        // 渲染前優化：暫時隱藏互動 UI
+        exportUI.style.display = 'none';
+        resetUI.style.display = 'none';
         watermark.style.display = 'block';
 
-        // 手機端優化參數：提高 scale 並確保背景不透明
-        html2canvas(card, {
+        // 手機端輕量化渲染參數
+        html2canvas(document.getElementById('main-card'), {
             scale: 2,
             useCORS: true,
-            allowTaint: true,
             backgroundColor: "#ffffff",
-            logging: false
+            logging: false,
+            onclone: (clonedDoc) => {
+                // 確保克隆出的 DOM 狀態穩定
+                clonedDoc.getElementById('export-ui').style.display = 'none';
+                clonedDoc.getElementById('reset-ui').style.display = 'none';
+            }
         }).then(canvas => {
             const imgData = canvas.toDataURL("image/jpeg", 0.9);
             document.getElementById('preview-img').src = imgData;
-            document.getElementById('img-preview-overlay').style.display = 'flex';
+            document.getElementById('preview-overlay').style.display = 'flex';
             
             // 恢復 UI
-            exportUI.style.visibility = 'visible';
-            resetUI.style.visibility = 'visible';
+            exportUI.style.display = 'block';
+            resetUI.style.display = 'block';
             watermark.style.display = 'none';
         }).catch(err => {
-            alert("圖檔產生失敗，請確認瀏覽器權限或重新整理網頁。");
-            exportUI.style.visibility = 'visible';
-            resetUI.style.visibility = 'visible';
+            alert("系統資源不足，請關閉其他背景 App 或重新整理網頁再試。");
+            exportUI.style.display = 'block';
+            resetUI.style.display = 'block';
         });
     }
 
-    function closePreview() { document.getElementById('img-preview-overlay').style.display = 'none'; }
+    function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; }
 </script>
 </body>
 </html>
