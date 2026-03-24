@@ -2,48 +2,48 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>RURU-tracker Pro</title>
+    <title>RURU-tracker Pro V7.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { --primary: #007bff; --success: #28a745; --danger: #dc3545; --water-light: #5dade2; --water-dark: #3498db; --card-bg: #ffffff; }
-        body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background: #f0f4f8; padding: 10px; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #333; }
+        body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background: #f0f4f8; padding: 10px; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #333; -webkit-tap-highlight-color: transparent; }
         .container { width: 100%; max-width: 480px; }
         .card { background: var(--card-bg); padding: 25px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
-        h2 { color: #0056b3; text-align: center; margin-top: 0; margin-bottom: 20px; font-weight: 800; }
+        h2 { color: #0056b3; text-align: center; margin-top: 0; margin-bottom: 20px; font-weight: 800; letter-spacing: 1px; }
         .form-row { display: flex; gap: 10px; margin-bottom: 12px; }
         .group { flex: 1; }
         label { display: block; font-size: 0.75em; font-weight: bold; margin-bottom: 5px; color: #555; }
-        select, input { width: 100%; padding: 12px; border: 1.5px solid #ccc; border-radius: 12px; box-sizing: border-box; font-size: 1em; background-color: #fff; color: #000; outline: none; }
-        .main-btn { width: 100%; padding: 16px; background: linear-gradient(45deg, #007bff, #00a8ff); color: white; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1.1em; }
+        select, input { width: 100%; padding: 12px; border: 1.5px solid #ccc; border-radius: 12px; box-sizing: border-box; font-size: 1em; background-color: #fff; color: #000; outline: none; transition: border 0.3s; }
+        select:focus, input:focus { border-color: var(--primary); }
+        .main-btn { width: 100%; padding: 16px; background: linear-gradient(45deg, #007bff, #00a8ff); color: white; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1.1em; box-shadow: 0 4px 15px rgba(0,123,255,0.3); }
         
         #result-area { display: none; margin-top: 25px; }
         .core-display { text-align: center; margin-bottom: 20px; background: #f8fbff; padding: 20px; border-radius: 20px; border: 2.5px solid #d1e3f8; }
         .result-amount { font-size: 3.2em; font-weight: 900; color: #004085; line-height: 1; }
-        .limit-box { font-size: 0.8em; color: var(--danger); font-weight: bold; margin-top: 5px; transition: 0.3s; }
-        .limit-box.warning { color: #fff; background: var(--danger); padding: 4px 10px; border-radius: 10px; animation: blink 1s infinite; }
+        .limit-box { font-size: 0.8em; color: var(--danger); font-weight: bold; margin-top: 5px; transition: 0.3s; padding: 4px; border-radius: 8px; }
+        .limit-box.warning { color: #fff; background: var(--danger); animation: blink 1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
         
         .hourly-target { font-size: 0.85em; color: #007bff; font-weight: bold; margin-top: 8px; display: block; }
         .progress-container { width: 100%; background-color: #e9ecef; border-radius: 10px; height: 14px; margin: 15px 0; overflow: hidden; border: 1.5px solid #ddd; }
         .progress-bar { height: 100%; background: linear-gradient(90deg, #4facfe, #00f2fe); width: 0%; transition: width 1s; }
-        .status-note-card { background: #fff; padding: 15px; border-radius: 15px; border: 1.5px solid #eee; border-left: 6px solid #007bff; margin-top: 10px; font-size: 0.9em; line-height: 1.6; color: #222; min-height: 50px; }
+        .status-note-card { background: #fff; padding: 15px; border-radius: 15px; border: 1.5px solid #eee; border-left: 6px solid #007bff; margin-top: 10px; font-size: 0.9em; line-height: 1.6; color: #222; min-height: 54px; box-sizing: border-box; }
         .status-note-card.success { border-left-color: var(--success); background-color: #f0fff4; }
         .status-note-card.danger { border-left-color: var(--danger); background-color: #fff5f5; border-color: #ffcccc; }
 
         .cups-section { margin-top: 20px; padding: 15px; background: #fff; border-radius: 20px; border: 1.5px solid #eee; }
         .cups-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 15px; }
-        .cup-item { text-align: center; cursor: pointer; }
+        .cup-item { text-align: center; cursor: pointer; -webkit-user-select: none; }
         .cup-glass { width: 42px; height: 52px; border: 2.5px solid #999; border-radius: 5px 5px 12px 12px; margin: 0 auto 5px; position: relative; overflow: hidden; background: #fff; }
         .cup-water { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(to top, #3498db, #5dade2); transition: height 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
         .cup-item.done .cup-glass { border-color: #0056b3; }
         .cup-item.done .cup-water { height: 100%; }
         .cup-label { font-size: 0.7em; color: #444; font-weight: bold; display: block; }
         .cup-time { font-size: 0.65em; color: #007bff; font-weight: 800; min-height: 1.2em; margin-top: 2px; }
-        .add-cup-btn { background: #fff; border: 2px dashed #007bff; color: #007bff; padding: 10px; border-radius: 12px; cursor: pointer; font-size: 0.85em; font-weight: bold; width: 100%; }
+        .add-cup-btn { background: #fff; border: 2px dashed #007bff; color: #007bff; padding: 12px; border-radius: 12px; cursor: pointer; font-size: 0.85em; font-weight: bold; width: 100%; }
         .total-box { margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 15px; text-align: center; border: 2px solid #eee; }
         .total-val { font-size: 2.2em; font-weight: 900; color: #004085; }
         .history-wall { margin-top: 20px; padding: 12px; background: #fff; border-radius: 15px; border: 1.5px solid #eee; }
@@ -52,16 +52,18 @@
         .dot { width: 10px; height: 10px; border-radius: 50%; background: #ddd; position: relative; }
         .dot.achieved { background: #28a745; border: 1px solid #1e7e34; }
         .dot::after { content: attr(data-date); position: absolute; top: 15px; left: 50%; transform: translateX(-50%); font-size: 7px; color: #888; }
-        .export-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; padding-top: 15px; border-top: 2px solid #eee; }
-        .export-btn { border: none; padding: 12px 5px; border-radius: 12px; color: white; font-weight: bold; font-size: 0.75em; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .btn-excel { background: #28a745; } .btn-pdf { background: #dc3545; } .btn-img { background: #f39c12; }
-        .reset-link { font-size: 0.75em; color: #999; text-decoration: underline; margin-top: 15px; display: block; text-align: center; cursor: pointer; }
-        #img-preview-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; padding: 15px; }
-        #preview-img { max-width: 100%; max-height: 75%; border-radius: 12px; border: 4px solid #fff; }
-        .preview-tip { color: white; margin-bottom: 10px; font-weight: bold; text-align: center; }
-        .close-preview { margin-top: 15px; background: #fff; border: none; padding: 10px 30px; border-radius: 20px; font-weight: bold; }
-        .footer-info { margin-top: 25px; text-align: center; font-size: 0.65em; color: #bbb; letter-spacing: 1px; }
-        .watermark { text-align: right; font-size: 0.6em; color: #999; margin-top: 10px; display: none; }
+        
+        /* 圖檔下載專用區域 */
+        .export-single { margin-top: 20px; padding-top: 15px; border-top: 2px solid #eee; text-align: center; }
+        .btn-img-full { width: 100%; background: #f39c12; color: white; border: none; padding: 16px; border-radius: 15px; font-weight: bold; font-size: 1em; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 12px rgba(243,156,18,0.3); }
+        
+        .reset-link { font-size: 0.8em; color: #bbb; text-decoration: none; margin-top: 20px; display: block; text-align: center; cursor: pointer; }
+        #img-preview-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; padding: 20px; box-sizing: border-box; }
+        #preview-img { max-width: 100%; max-height: 80%; border-radius: 12px; border: 3px solid #fff; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .preview-tip { color: white; margin-bottom: 15px; font-weight: bold; text-align: center; font-size: 1.1em; line-height: 1.5; }
+        .close-preview { margin-top: 20px; background: #fff; border: none; padding: 12px 40px; border-radius: 25px; font-weight: bold; font-size: 1em; }
+        .footer-info { margin-top: 25px; text-align: center; font-size: 0.65em; color: #ccc; letter-spacing: 2px; }
+        .watermark { text-align: right; font-size: 0.6em; color: #999; margin-top: 10px; display: none; font-style: italic; }
     </style>
 </head>
 <body>
@@ -70,80 +72,130 @@
         <h2>RURU-tracker Pro</h2>
         <div class="form-row">
             <div class="group"><label>性別</label><select id="gender"><option value="" disabled selected>請選擇</option><option value="female">女性</option><option value="male">男性</option></select></div>
-            <div class="group"><label>年齡</label><input type="number" id="age" placeholder="歲數"></div>
+            <div class="group"><label>年齡</label><input type="number" id="age" placeholder="歲數" inputmode="numeric"></div>
         </div>
         <div class="form-row">
-            <div class="group"><label>體重 (kg)</label><input type="number" id="weight" placeholder="kg"></div>
+            <div class="group"><label>體重 (kg)</label><input type="number" id="weight" placeholder="kg" inputmode="decimal"></div>
             <div class="group"><label>目前狀態</label><select id="status"><option value="" disabled selected>請選擇</option><option value="weight_loss">減肥期間</option><option value="adult">一般成人</option><option value="high_temp">高溫工作</option><option value="chronic_disease">限水患者</option></select></div>
         </div>
         <div class="form-row">
-            <div class="group"><label>預設每杯 (ml)</label><input type="number" id="cupSize" value="250"></div>
-            <div class="group"><label>每小時目標 (ml)</label><input type="number" id="hourlyGoal" placeholder="選填"></div>
+            <div class="group"><label>預設每杯 (ml)</label><input type="number" id="cupSize" value="250" inputmode="numeric"></div>
+            <div class="group"><label>每小時目標 (ml)</label><input type="number" id="hourlyGoal" placeholder="選填" inputmode="numeric"></div>
         </div>
         <button class="main-btn" onclick="initRURU()">開始今日計畫</button>
+
         <div id="result-area">
             <div class="core-display">
-                <span style="font-size:0.8em; color:#007bff; font-weight:bold;">建議每日目標總量</span><br>
-                <span class="result-amount" id="amount">--</span><span class="unit">ml</span><br>
+                <span style="font-size:0.85em; color:#007bff; font-weight:bold;">建議每日目標總量</span><br>
+                <span class="result-amount" id="amount">--</span><span style="font-size:0.4em; font-weight:bold; margin-left:5px;">ml</span><br>
                 <div class="limit-box" id="limitBox">📈 健康上限：<span id="limitVal">--</span> ml</div>
                 <div class="hourly-target" id="hourlyDisplay"></div>
             </div>
             <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
             <div class="status-note-card" id="noteContent"></div>
-            <div class="cups-section"><div class="cups-grid" id="cupsGrid"></div><button class="add-cup-btn" id="addCupBtn" onclick="addOneCup()">＋ 新增一杯水</button></div>
-            <div class="total-box"><div style="font-size:0.8em; color:#666; margin-bottom:5px;">今日已累計飲用</div><span class="total-val" id="currentTotal">0</span> <small>ml</small></div>
-            <div class="history-wall"><span class="history-title">最近 7 日達成狀況</span><div class="history-dots" id="historyDots"></div></div>
-            <div class="export-grid" id="export-ui">
-                <button class="export-btn btn-excel" onclick="exportExcel()">📊 Excel (PC)</button>
-                <button class="export-btn btn-pdf" onclick="exportPDF()">📄 PDF (PC)</button>
-                <button class="export-btn btn-img" onclick="exportImage()">🖼️ 圖檔</button>
+            <div class="cups-section">
+                <div class="cups-grid" id="cupsGrid"></div>
+                <button class="add-cup-btn" id="addCupBtn" onclick="addOneCup()">＋ 手動新增一杯水</button>
             </div>
-            <span class="reset-link" id="reset-ui" onclick="clearAllData()">🗑️ 重設紀錄</span>
+            <div class="total-box">
+                <div style="font-size:0.8em; color:#666; margin-bottom:5px;">今日已累計飲用</div>
+                <span class="total-val" id="currentTotal">0</span> <small>ml</small>
+            </div>
+            <div class="history-wall"><span class="history-title">最近 7 日達成狀況</span><div class="history-dots" id="historyDots"></div></div>
+            
+            <div class="export-single" id="export-ui">
+                <button class="btn-img-full" onclick="exportImage()">📸 產生今日飲水成就圖</button>
+            </div>
+            <span class="reset-link" id="reset-ui" onclick="clearAllData()">🗑️ 重設所有紀錄</span>
             <div class="watermark" id="watermark">Created by RURU-prog</div>
         </div>
-        <div class="footer-info">VERSION 6.9</div>
+        <div class="footer-info">VERSION 7.0 (MOBILE OPTIMIZED)</div>
     </div>
 </div>
+
 <div id="img-preview-overlay">
-    <div class="preview-tip">✨ 飲水海報已產生！<br>手機端請【長按圖片】儲存</div>
-    <img id="preview-img" src=""><button class="close-preview" onclick="closePreview()">關閉預覽</button>
+    <div class="preview-tip">✨ 飲水海報已產生！<br>請【長按圖片】儲存至相簿</div>
+    <img id="preview-img" src="">
+    <button class="close-preview" onclick="closePreview()">關閉預覽</button>
 </div>
+
 <script>
     let drinkData = []; let config = {};
-    const STORAGE_KEY = 'RURU_WATER_V6_9';
+    const STORAGE_KEY = 'RURU_WATER_V7_0';
     const HISTORY_KEY = 'RURU_WATER_HISTORY';
-    const isMobile = /Android|iPhone|iPad|iPod|Line/i.test(navigator.userAgent);
+    
     window.onload = function() { loadSavedData(); renderHistory(); };
+
     function initRURU(isAutoLoad = false) {
-        const gender = document.getElementById('gender').value; const ageVal = document.getElementById('age').value; const weightVal = document.getElementById('weight').value; const status = document.getElementById('status').value; const hourlyGoal = document.getElementById('hourlyGoal').value;
+        const gender = document.getElementById('gender').value;
+        const ageVal = document.getElementById('age').value;
+        const weightVal = document.getElementById('weight').value;
+        const status = document.getElementById('status').value;
+        const hourlyGoal = document.getElementById('hourlyGoal').value;
         const activeCupSize = hourlyGoal ? parseInt(hourlyGoal) : (parseInt(document.getElementById('cupSize').value) || 250);
-        if (!gender || !ageVal || !weightVal || !status) { if(!isAutoLoad) alert("請完整填寫喔！"); return; }
+
+        if (!gender || !ageVal || !weightVal || !status) { if(!isAutoLoad) alert("請完整填寫生理資料喔！"); return; }
+        
         const age = parseInt(ageVal); const weight = parseFloat(weightVal);
         let target = (status === 'chronic_disease') ? 1200 : (weight * (age <= 12 ? 55 : (age >= 65 ? 30 : (gender === 'male' ? 35 : 30)))) + (status === 'weight_loss' ? 500 : (status === 'high_temp' ? 800 : 0));
         let limit = (status === 'chronic_disease') ? 1200 : (weight * 50) + (status === 'weight_loss' ? 500 : (status === 'high_temp' ? 800 : 0));
+        
         config = { target, limit, activeCupSize, hourlyGoal, date: new Date().toLocaleDateString() };
-        document.getElementById('amount').innerText = Math.round(target); document.getElementById('limitVal').innerText = Math.round(limit); document.getElementById('hourlyDisplay').innerText = hourlyGoal ? `⏰ 每小時目標：${hourlyGoal} ml` : ""; document.getElementById('addCupBtn').innerText = `＋ 手動新增 ${activeCupSize}ml`;
-        if (!isAutoLoad) { const grid = document.getElementById('cupsGrid'); grid.innerHTML = ''; drinkData = []; for (let i = 0; i < Math.ceil(target / activeCupSize); i++) { createCupElement(i); } }
-        document.getElementById('result-area').style.display = 'block'; updateUI(); saveToLocal();
-    }
-    function createCupElement(index, savedTime = null) {
-        const grid = document.getElementById('cupsGrid'); const cup = document.createElement('div'); cup.className = 'cup-item' + (savedTime ? ' done' : ''); cup.id = `cup-${index}`; cup.onclick = () => toggleCup(index);
-        cup.innerHTML = `<div class="cup-glass"><div class="cup-water"></div></div><span class="cup-label">${config.activeCupSize}ml</span><span class="cup-time" id="time-${index}">${savedTime || '--:--'}</span>`;
-        grid.appendChild(cup); if (!savedTime) drinkData.push({ id: index, time: null, volume: config.activeCupSize });
-    }
-    function toggleCup(index) {
-        const item = document.getElementById(`cup-${index}`); const tl = document.getElementById(`time-${index}`);
-        if (!drinkData[index].time) { drinkData[index].time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); item.classList.add('done'); tl.innerText = drinkData[index].time; }
-        else { drinkData[index].time = null; item.classList.remove('done'); tl.innerText = '--:--'; }
+        
+        document.getElementById('amount').innerText = Math.round(target);
+        document.getElementById('limitVal').innerText = Math.round(limit);
+        document.getElementById('hourlyDisplay').innerText = hourlyGoal ? `⏰ 每小時補水目標：${hourlyGoal} ml` : "";
+        document.getElementById('addCupBtn').innerText = `＋ 手動新增 ${activeCupSize}ml`;
+        
+        if (!isAutoLoad) {
+            const grid = document.getElementById('cupsGrid');
+            grid.innerHTML = ''; drinkData = [];
+            const cupCount = Math.ceil(target / activeCupSize);
+            for (let i = 0; i < cupCount; i++) { createCupElement(i); }
+        }
+        document.getElementById('result-area').style.display = 'block';
         updateUI(); saveToLocal();
     }
-    function addOneCup() { const idx = drinkData.length; drinkData.push({ id: idx, time: null, volume: config.activeCupSize }); createCupElement(idx); updateUI(); saveToLocal(); }
+
+    function createCupElement(index, savedTime = null) {
+        const grid = document.getElementById('cupsGrid');
+        const cup = document.createElement('div');
+        cup.className = 'cup-item' + (savedTime ? ' done' : '');
+        cup.id = `cup-${index}`;
+        cup.onclick = () => toggleCup(index);
+        cup.innerHTML = `<div class="cup-glass"><div class="cup-water"></div></div><span class="cup-label">${config.activeCupSize}ml</span><span class="cup-time" id="time-${index}">${savedTime || '--:--'}</span>`;
+        grid.appendChild(cup);
+        if (!savedTime) drinkData.push({ id: index, time: null, volume: config.activeCupSize });
+    }
+
+    function toggleCup(index) {
+        const item = document.getElementById(`cup-${index}`);
+        const tl = document.getElementById(`time-${index}`);
+        if (!drinkData[index].time) {
+            drinkData[index].time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false});
+            item.classList.add('done');
+            tl.innerText = drinkData[index].time;
+        } else {
+            drinkData[index].time = null;
+            item.classList.remove('done');
+            tl.innerText = '--:--';
+        }
+        updateUI(); saveToLocal();
+    }
+
+    function addOneCup() {
+        const idx = drinkData.length;
+        drinkData.push({ id: idx, time: null, volume: config.activeCupSize });
+        createCupElement(idx);
+        updateUI(); saveToLocal();
+    }
+
     function updateUI() {
         const total = drinkData.reduce((sum, d) => sum + (d.time ? d.volume : 0), 0);
-        document.getElementById('progressBar').style.width = Math.min((total / config.target) * 100, 100) + '%';
+        const percent = Math.min((total / config.target) * 100, 100);
+        document.getElementById('progressBar').style.width = percent + '%';
         document.getElementById('currentTotal').innerText = total;
         
-        // --- 安全警示邏輯 ---
         const limitBox = document.getElementById('limitBox');
         if (total > config.limit) {
             limitBox.classList.add('warning');
@@ -153,64 +205,121 @@
             limitBox.innerHTML = `📈 健康上限：${Math.round(config.limit)} ml`;
         }
 
-        if ((total / config.target) * 100 >= 100 && !window.hasCelebrated) { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); window.hasCelebrated = true; updateHistory(true); }
-        else if ((total / config.target) * 100 < 100) { window.hasCelebrated = false; }
+        if (percent >= 100 && !window.hasCelebrated) {
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 1000 });
+            window.hasCelebrated = true;
+            updateHistory(true);
+        } else if (percent < 100) {
+            window.hasCelebrated = false;
+        }
         updateSmartNote(total);
     }
+
     function updateSmartNote(total) {
-        const noteEl = document.getElementById('noteContent'); const status = document.getElementById('status').value;
+        const noteEl = document.getElementById('noteContent');
+        const status = document.getElementById('status').value;
         const percent = (total / config.target) * 100;
         
         if (total > config.limit) {
-            noteEl.innerHTML = "⚠️ <b>安全警告：飲水已達極限！</b><br>過量飲水可能造成身體負擔，建議暫停補水。若感到頭暈或噁心，請及時休息。";
+            noteEl.innerHTML = "⚠️ <b>安全警告：飲水已達極限！</b><br>過量飲水可能造成身體負擔。若感到頭暈，請停止補水並及時休息。";
             noteEl.className = "status-note-card danger";
         } else if (percent >= 100) {
-            noteEl.innerHTML = "🎉 <b>今日目標已達成！</b><br>代謝力處於巔峰狀態！";
+            noteEl.innerHTML = "🎉 <b>今日目標已達成！</b><br>妳的細胞現在非常水潤，代謝力處於巔峰狀態！";
             noteEl.className = "status-note-card success";
         } else {
-            const tips = { 'weight_loss': ["💡 脂肪代謝需要水分參與，缺水會讓減肥停滯。", "💡 飯前30分鐘喝水，能顯著增加飽足感。"], 'adult': ["💡 大腦缺水 2%，專注力就會開始下降。", "💡 規律補水能讓血液循環更順暢。"], 'high_temp': ["☀️ 高溫流汗量大，請務必分次小口補水。", "☀️ 感到口渴時，身體已處於輕微脫水狀態。"], 'chronic_disease': ["⚠️ 限水患者請嚴格遵照醫囑。", "⚠️ 可用冰水漱口緩解不適。"] };
-            noteEl.innerHTML = percent >= 75 ? "🚀 快達標了！再喝一點點就成功囉！" : (tips[status] || tips['adult'])[Math.floor(Math.random() * 2)];
+            const tips = { 'weight_loss': ["💡 飯前30分鐘喝水，能顯著增加飽足感。", "💡 脂肪代謝需要水分參與，補水能加速燃脂。"], 'adult': ["💡 大腦缺水 2%，專注力就會開始下降。", "💡 規律補水能讓皮膚更有光澤。"], 'high_temp': ["☀️ 高溫環境下，請務必分次小口補水。", "☀️ 感到口渴時，身體已處於輕微脫水狀態。"], 'chronic_disease': ["⚠️ 限水患者請嚴格遵照醫囑。", "⚠️ 可用噴霧或冰塊稍微濕潤口腔。"] };
+            noteEl.innerHTML = percent >= 75 ? "🚀 快達標了！妳的堅持正在改變身體！" : (tips[status] || tips['adult'])[Math.floor(Math.random() * 2)];
             noteEl.className = "status-note-card";
         }
     }
-    function updateHistory(ach) { let h = JSON.parse(localStorage.getItem(HISTORY_KEY) || '{}'); h[config.date] = ach; localStorage.setItem(HISTORY_KEY, JSON.stringify(h)); renderHistory(); }
+
+    function updateHistory(ach) {
+        let h = JSON.parse(localStorage.getItem(HISTORY_KEY) || '{}');
+        h[config.date] = ach;
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(h));
+        renderHistory();
+    }
+
     function renderHistory() {
-        const grid = document.getElementById('historyDots'); grid.innerHTML = ''; let h = JSON.parse(localStorage.getItem(HISTORY_KEY) || '{}');
-        for (let i = 6; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); const ds = d.toLocaleDateString(); const dot = document.createElement('div'); dot.className = 'dot' + (h[ds] ? ' achieved' : ''); dot.setAttribute('data-date', ds.split('/')[1] + '/' + ds.split('/')[2]); grid.appendChild(dot); }
+        const grid = document.getElementById('historyDots'); grid.innerHTML = '';
+        let h = JSON.parse(localStorage.getItem(HISTORY_KEY) || '{}');
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(); d.setDate(d.getDate() - i);
+            const ds = d.toLocaleDateString();
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (h[ds] ? ' achieved' : '');
+            dot.setAttribute('data-date', ds.split('/')[1] + '/' + ds.split('/')[2]);
+            grid.appendChild(dot);
+        }
     }
-    function saveToLocal() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ profile: { gender: document.getElementById('gender').value, age: document.getElementById('age').value, weight: document.getElementById('weight').value, status: document.getElementById('status').value, cupSize: document.getElementById('cupSize').value, hourlyGoal: config.hourlyGoal }, drinkData, config, lastUpdate: new Date().toLocaleDateString() })); }
+
+    function saveToLocal() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            profile: { gender: document.getElementById('gender').value, age: document.getElementById('age').value, weight: document.getElementById('weight').value, status: document.getElementById('status').value, cupSize: document.getElementById('cupSize').value, hourlyGoal: config.hourlyGoal },
+            drinkData, config, lastUpdate: new Date().toLocaleDateString()
+        }));
+    }
+
     function loadSavedData() {
-        const raw = localStorage.getItem(STORAGE_KEY); if (!raw) return; const data = JSON.parse(raw);
-        document.getElementById('gender').value = data.profile.gender; document.getElementById('age').value = data.profile.age; document.getElementById('weight').value = data.profile.weight; document.getElementById('status').value = data.profile.status; document.getElementById('cupSize').value = data.profile.cupSize || 250; document.getElementById('hourlyGoal').value = data.profile.hourlyGoal || "";
-        if (data.lastUpdate === new Date().toLocaleDateString()) { config = data.config; drinkData = data.drinkData; document.getElementById('amount').innerText = Math.round(config.target); document.getElementById('limitVal').innerText = Math.round(config.limit || 0); document.getElementById('hourlyDisplay').innerText = config.hourlyGoal ? `⏰ 每小時目標：${config.hourlyGoal} ml` : ""; const grid = document.getElementById('cupsGrid'); grid.innerHTML = ''; drinkData.forEach((d, i) => { createCupElement(i, d.time); }); document.getElementById('result-area').style.display = 'block'; updateUI(); }
+        const raw = localStorage.getItem(STORAGE_KEY); if (!raw) return;
+        const data = JSON.parse(raw);
+        document.getElementById('gender').value = data.profile.gender;
+        document.getElementById('age').value = data.profile.age;
+        document.getElementById('weight').value = data.profile.weight;
+        document.getElementById('status').value = data.profile.status;
+        document.getElementById('cupSize').value = data.profile.cupSize || 250;
+        document.getElementById('hourlyGoal').value = data.profile.hourlyGoal || "";
+        
+        if (data.lastUpdate === new Date().toLocaleDateString()) {
+            config = data.config; drinkData = data.drinkData;
+            document.getElementById('amount').innerText = Math.round(config.target);
+            document.getElementById('limitVal').innerText = Math.round(config.limit || 0);
+            document.getElementById('hourlyDisplay').innerText = config.hourlyGoal ? `⏰ 每小時目標：${config.hourlyGoal} ml` : "";
+            const grid = document.getElementById('cupsGrid');
+            grid.innerHTML = '';
+            drinkData.forEach((d, i) => { createCupElement(i, d.time); });
+            document.getElementById('result-area').style.display = 'block';
+            updateUI();
+        }
     }
+
     function clearAllData() { if (confirm("確定重設今日紀錄？")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
+
     function exportImage() {
-        const card = document.querySelector("#main-card"); document.getElementById('export-ui').style.display = 'none'; document.getElementById('reset-ui').style.display = 'none'; document.getElementById('watermark').style.display = 'block';
-        html2canvas(card, { scale: 2, backgroundColor: "#ffffff", onclone: (clonedDoc) => {
-            const cc = clonedDoc.querySelector("#main-card"); cc.style.color = "#222"; cc.querySelectorAll(".cup-water").forEach(el => el.style.background = "linear-gradient(to top, #2980b9, #3498db)");
-        }}).then(canvas => {
-            const imgData = canvas.toDataURL("image/jpeg", 0.95); document.getElementById('preview-img').src = imgData; document.getElementById('img-preview-overlay').style.display = 'flex';
-            const link = document.createElement('a'); link.href = imgData; link.download = `RURU海報_${config.date}.jpg`; link.click();
-            document.getElementById('export-ui').style.display = 'grid'; document.getElementById('reset-ui').style.display = 'block'; document.getElementById('watermark').style.display = 'none';
+        const card = document.querySelector("#main-card");
+        const exportUI = document.getElementById('export-ui');
+        const resetUI = document.getElementById('reset-ui');
+        const watermark = document.getElementById('watermark');
+        
+        // 隱藏非必要 UI 以便截圖
+        exportUI.style.visibility = 'hidden';
+        resetUI.style.visibility = 'hidden';
+        watermark.style.display = 'block';
+
+        // 手機端優化參數：提高 scale 並確保背景不透明
+        html2canvas(card, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: "#ffffff",
+            logging: false
+        }).then(canvas => {
+            const imgData = canvas.toDataURL("image/jpeg", 0.9);
+            document.getElementById('preview-img').src = imgData;
+            document.getElementById('img-preview-overlay').style.display = 'flex';
+            
+            // 恢復 UI
+            exportUI.style.visibility = 'visible';
+            resetUI.style.visibility = 'visible';
+            watermark.style.display = 'none';
+        }).catch(err => {
+            alert("圖檔產生失敗，請確認瀏覽器權限或重新整理網頁。");
+            exportUI.style.visibility = 'visible';
+            resetUI.style.visibility = 'visible';
         });
     }
+
     function closePreview() { document.getElementById('img-preview-overlay').style.display = 'none'; }
-    function exportPDF() { 
-        if (isMobile) { alert("💡 手機端不支援直接下載 PDF，請優先使用『圖檔下載』功能。"); return; }
-        html2canvas(document.querySelector("#main-card"), { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
-            const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4');
-            pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 20, 190, (canvas.height * 190) / canvas.width);
-            pdf.save(`RURU飲水報告_${config.date}.pdf`);
-        });
-    }
-    function exportExcel() {
-        if (isMobile) { alert("💡 手機端不支援下載 Excel，請使用電腦版網頁。"); return; }
-        let csv = "\uFEFF日期," + config.date + "\n目標," + Math.round(config.target) + "ml\n累積," + document.getElementById('currentTotal').innerText + "ml\n\n杯次,容量,紀錄時間\n";
-        drinkData.forEach((d, i) => { if(d.time) csv += (i+1) + "," + d.volume + "ml," + d.time + "\n"; });
-        const link = document.createElement("a"); link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
-        link.download = `RURU飲水紀錄_${config.date}.csv`; link.click();
-    }
 </script>
 </body>
 </html>
