@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RURU-tracker Pro V8.4</title>
+    <title>RURU-tracker Pro V8.5</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
@@ -13,30 +13,31 @@
         .card { background: #fff; padding: 25px; border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
         h2 { text-align: center; color: #0056b3; margin-top: 0; font-weight: 900; }
         
-        /* 設定與新增區並排佈局 */
         .form-row { display: flex; gap: 10px; margin-bottom: 12px; }
         .group { flex: 1; }
         label { display: block; font-size: 0.75rem; font-weight: bold; color: #666; margin-bottom: 5px; }
-        select, input { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 12px; font-size: 1rem; box-sizing: border-box; background: #fff; outline: none; transition: border-color 0.2s; }
+        select, input { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 12px; font-size: 1rem; box-sizing: border-box; background: #fff; outline: none; }
 
-        /* 結果顯示 */
         #result-area { display: none; }
         .display-card { text-align: center; background: #f8fbff; padding: 20px; border-radius: 20px; border: 2.5px solid #e1efff; margin-bottom: 20px; }
         .target-val { font-size: 3rem; font-weight: 900; color: #004085; line-height: 1; }
         .limit-info { font-size: 0.85rem; font-weight: bold; margin-top: 8px; color: #888; }
         .limit-info.over { background: #dc3545; color: #fff; padding: 4px 8px; border-radius: 8px; }
 
-        /* 水杯與動畫 */
+        /* 水杯網格 */
         .cups-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
         .cup-item { text-align: center; cursor: pointer; }
         .cup-glass { width: 45px; height: 55px; border: 2.5px solid #bbb; border-radius: 5px 5px 12px 12px; margin: 0 auto 5px; position: relative; overflow: hidden; background: #fff; }
         .cup-water { position: absolute; bottom: 0; left: 0; width: 100%; height: 0; background: var(--water-blue); transition: height 1.2s cubic-bezier(0.23, 1, 0.32, 1); }
+        
+        /* 只有在 filled 類別存在時才注滿，且渲染時若已有 filled 則跳過動畫 */
         .cup-item.filled .cup-water { height: 100%; }
         .cup-item.filled .cup-glass { border-color: var(--primary); }
-        .cup-label { font-size: 0.7rem; font-weight: bold; color: #555; }
-        .cup-time { font-size: 0.65rem; color: var(--primary); font-weight: 800; min-height: 1.1em; }
+        .cup-item.no-anim .cup-water { transition: none !important; }
 
-        /* 操作按鈕區 */
+        .cup-label { font-size: 0.7rem; font-weight: bold; color: #555; }
+        .cup-time { font-size: 0.65rem; color: var(--primary); font-weight: 800; min-height: 1.1em; cursor: edit; text-decoration: underline dotted; }
+
         .action-panel { background: #f9fafb; padding: 15px; border-radius: 20px; border: 1px solid #eee; margin-bottom: 15px; }
         .btn-add-fast { background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; }
         .export-btn { background: #f39c12; color: #fff; border: none; padding: 16px; border-radius: 15px; font-weight: bold; font-size: 1.05rem; cursor: pointer; width: 100%; margin-top: 10px; }
@@ -78,17 +79,11 @@
             <div class="cups-grid" id="cupsGrid"></div>
 
             <div class="action-panel">
-                <label style="display:block; font-size:0.75rem; font-weight:bold; color:#666; margin-bottom:8px;">＋ 新增飲水紀錄</label>
+                <label style="display:block; font-size:0.75rem; font-weight:bold; color:#666; margin-bottom:8px;">＋ 新增飲水紀錄 (預設新增為空杯)</label>
                 <div class="form-row" style="margin-bottom:0;">
-                    <div class="group">
-                        <button class="btn-add-fast" id="fastAddLabel" onclick="addCup(null)">快速加入 200ml</button>
-                    </div>
-                    <div class="group">
-                        <input type="number" id="customMl" placeholder="自填 ml" inputmode="numeric" style="padding:10px;">
-                    </div>
-                    <div style="width:50px;">
-                        <button onclick="addCup(document.getElementById('customMl').value)" style="width:100%; height:100%; border-radius:12px; border:1px solid var(--primary); color:var(--primary); background:#fff; font-weight:bold; cursor:pointer;">GO</button>
-                    </div>
+                    <div class="group"><button class="btn-add-fast" id="fastAddLabel" onclick="addBlankCup(null)">快速新增空杯</button></div>
+                    <div class="group"><input type="number" id="customMl" placeholder="自填 ml" inputmode="numeric" style="padding:10px;"></div>
+                    <div style="width:50px;"><button onclick="addBlankCup(document.getElementById('customMl').value)" style="width:100%; height:100%; border-radius:12px; border:1px solid var(--primary); color:var(--primary); background:#fff; font-weight:bold; cursor:pointer;">GO</button></div>
                 </div>
             </div>
 
@@ -112,7 +107,7 @@
 
 <script>
     let state = { cups: [], cfg: {} };
-    const KEY = 'RURU_V84_FINAL';
+    const KEY = 'RURU_V85_STABLE';
 
     function initApp() {
         const gen = document.getElementById('gender').value;
@@ -131,7 +126,7 @@
         state.cups = [];
         for(let i=0; i<Math.ceil(tar/dC); i++) state.cups.push({ v: dC, t: null });
 
-        document.getElementById('fastAddLabel').innerText = `快速加入 ${dC}ml`;
+        document.getElementById('fastAddLabel').innerText = `快速新增 ${dC}ml`;
         render();
         document.getElementById('result-area').style.display = 'block';
         update();
@@ -144,29 +139,51 @@
         state.cups.forEach((c, i) => {
             const el = document.createElement('div');
             el.className = 'cup-item';
+            // 如果已經有時間戳記，初始載入時不應有動畫，直接填滿
+            if(c.t) el.classList.add('filled', 'no-anim');
+            
             el.innerHTML = `
                 <div class="cup-glass"><div class="cup-water"></div></div>
                 <span class="cup-label">${c.v}ml</span>
-                <div class="cup-time">${c.t || ''}</div>
+                <div class="cup-time" onclick="editTime(event, ${i})">${c.t || ''}</div>
             `;
             
-            // 重要：非同步觸發注水動畫
-            if(c.t) setTimeout(() => el.classList.add('filled'), 50);
-
-            el.onclick = () => {
-                state.cups[i].t = state.cups[i].t ? null : getTime();
-                render(); update(); save();
+            // 點擊杯子主體才觸發注水
+            el.querySelector('.cup-glass').onclick = (e) => {
+                e.stopPropagation();
+                if(!state.cups[i].t) {
+                    state.cups[i].t = getTime();
+                    el.classList.remove('no-anim');
+                    el.classList.add('filled');
+                } else {
+                    state.cups[i].t = null;
+                    el.classList.remove('filled', 'no-anim');
+                }
+                update(); save();
+                el.querySelector('.cup-time').innerText = state.cups[i].t || '';
             };
             grid.appendChild(el);
         });
     }
 
-    function addCup(val) {
+    // 修正點：新增為空杯
+    function addBlankCup(val) {
         let v = val ? parseInt(val) : state.cfg.dC;
-        if(isNaN(v) || v <= 0) return alert("請輸入正確的 ml 數。");
-        state.cups.push({ v: v, t: getTime() });
+        if(isNaN(v) || v <= 0) return alert("請輸入正確數值。");
+        state.cups.push({ v: v, t: null }); // t 為 null 即為空杯
         document.getElementById('customMl').value = '';
         render(); update(); save();
+    }
+
+    // 修正點：修改時間戳記
+    function editTime(event, index) {
+        event.stopPropagation();
+        if(!state.cups[index].t) return; // 沒喝水不能改時間
+        let newTime = prompt("修改飲水時間 (格式 HH:mm):", state.cups[index].t);
+        if(newTime !== null) {
+            state.cups[index].t = newTime;
+            render(); save();
+        }
     }
 
     function update() {
@@ -196,7 +213,6 @@
         const btn = document.getElementById('btn-cap');
         btn.style.visibility = 'hidden';
         document.getElementById('wm').style.display = 'block';
-
         html2canvas(target, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
             document.getElementById('preview-img').src = canvas.toDataURL("image/jpeg", 0.9);
             document.getElementById('preview-overlay').style.display = 'flex';
@@ -210,7 +226,7 @@
         const p = JSON.parse(saved);
         if(p.cfg.date === new Date().toLocaleDateString()) {
             state = p;
-            document.getElementById('fastAddLabel').innerText = `快速加入 ${state.cfg.dC}ml`;
+            document.getElementById('fastAddLabel').innerText = `快速新增 ${state.cfg.dC}ml`;
             document.getElementById('result-area').style.display = 'block';
             render(); update();
         }
