@@ -3,51 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RURU-tracker Pro V8.1</title>
+    <title>RURU-tracker Pro V8.2</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        :root { --primary: #007bff; --success: #28a745; --danger: #dc3545; --water-blue: linear-gradient(180deg, #5dade2 0%, #3498db 100%); }
-        body { font-family: -apple-system, "Noto Sans TC", sans-serif; background: #f0f4f8; margin: 0; padding: 15px; display: flex; align-items: center; justify-content: center; min-height: 100vh; color: #333; }
-        .container { width: 100%; max-width: 450px; display: flex; justify-content: center; }
-        .card { background: #fff; padding: 25px; border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); width: 100%; box-sizing: border-box; }
+        :root { --primary: #007bff; --success: #28a745; --danger: #dc3545; }
+        body { font-family: -apple-system, "Noto Sans TC", sans-serif; background: #f2f5f8; margin: 0; padding: 10px; display: flex; justify-content: center; min-height: 100vh; color: #333; }
+        .container { width: 100%; max-width: 450px; }
+        .card { background: #fff; padding: 25px; border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); position: relative; }
         h2 { text-align: center; color: #0056b3; margin-top: 0; font-weight: 900; }
         
-        /* 設定區 */
+        /* 設定區對齊修正 */
         .setup-area { border-bottom: 2px dashed #eee; padding-bottom: 20px; margin-bottom: 20px; }
         .form-row { display: flex; gap: 10px; margin-bottom: 12px; }
         .group { flex: 1; }
         label { display: block; font-size: 0.75rem; font-weight: bold; color: #666; margin-bottom: 5px; }
-        select, input { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 12px; font-size: 1rem; box-sizing: border-box; background: #fff; outline: none; }
+        select, input { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 12px; font-size: 1rem; box-sizing: border-box; background: #fff; outline: none; transition: border-color 0.2s; }
+        input:focus { border-color: var(--primary); }
 
         /* 結果區 */
         #result-area { display: none; }
-        .display-card { text-align: center; background: #f8fbff; padding: 20px; border-radius: 20px; border: 2.5px solid #e1efff; margin-bottom: 20px; }
+        .display-card { text-align: center; background: #f8fbff; padding: 18px; border-radius: 20px; border: 2.5px solid #e1efff; margin-bottom: 15px; }
         .target-val { font-size: 3rem; font-weight: 900; color: #004085; line-height: 1; }
-        .limit-info { font-size: 0.85rem; font-weight: bold; margin-top: 8px; color: #888; transition: 0.3s; }
-        .limit-info.over { color: #fff; background: var(--danger); padding: 5px; border-radius: 8px; }
+        .limit-info { font-size: 0.8rem; font-weight: bold; margin-top: 8px; color: #888; }
+        .limit-info.over { background: var(--danger); color: #fff; padding: 4px 8px; border-radius: 6px; }
 
-        /* 動態注水杯 */
+        /* 動態式填滿水杯 */
         .cups-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
         .cup-item { text-align: center; cursor: pointer; }
-        .cup-glass { width: 45px; height: 55px; border: 2.5px solid #bbb; border-radius: 5px 5px 12px 12px; margin: 0 auto 5px; position: relative; overflow: hidden; background: #fff; transition: border-color 0.4s; }
-        .cup-water { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: var(--water-blue); transition: height 1s cubic-bezier(0.4, 0, 0.2, 1); }
-        .cup-item.done .cup-glass { border-color: var(--primary); box-shadow: 0 0 10px rgba(52,152,219,0.3); }
+        .cup-glass { width: 45px; height: 55px; border: 2.5px solid #bbb; border-radius: 5px 5px 12px 12px; margin: 0 auto 5px; position: relative; overflow: hidden; background: #fff; transition: border-color 0.3s; }
+        .cup-water { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(180deg, #5dade2 0%, #3498db 100%); transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .cup-item.done .cup-glass { border-color: var(--primary); }
         .cup-item.done .cup-water { height: 100%; }
-        .cup-label { font-size: 0.7rem; font-weight: bold; color: #555; display: block; }
+        .cup-label { font-size: 0.7rem; font-weight: bold; color: #555; }
         .cup-time { font-size: 0.65rem; color: var(--primary); font-weight: 800; min-height: 1.1em; }
 
-        /* 註解與按鈕 */
-        .note-box { background: #fff; padding: 15px; border-radius: 15px; border-left: 5px solid var(--primary); font-size: 0.9rem; margin-bottom: 20px; min-height: 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
-        .btn-group { display: flex; flex-direction: column; gap: 10px; }
-        .add-btn { background: #fff; border: 2px dashed var(--primary); color: var(--primary); padding: 12px; border-radius: 15px; font-weight: bold; cursor: pointer; }
-        .export-btn { background: #f39c12; color: #fff; border: none; padding: 16px; border-radius: 15px; font-weight: bold; font-size: 1.05rem; cursor: pointer; box-shadow: 0 4px 15px rgba(243,156,18,0.3); }
+        .note-box { background: #fff; padding: 12px; border-radius: 12px; border-left: 5px solid var(--primary); font-size: 0.85rem; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
         
-        /* 截圖預覽 (置中對齊) */
-        #preview-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; justify-content:center; align-items:center; flex-direction:column; padding:20px; box-sizing:border-box; }
-        #preview-img { max-width: 90%; max-height: 80%; border-radius: 15px; border: 3px solid #fff; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
-        .preview-tip { color:#fff; margin-bottom:15px; font-weight:bold; letter-spacing: 1px; }
-        .close-btn { margin-top: 25px; background: #fff; padding: 12px 50px; border-radius: 25px; font-weight: 900; border: none; cursor: pointer; }
+        .btn-group { display: flex; flex-direction: column; gap: 8px; }
+        .add-btn { background: #fff; border: 2px dashed var(--primary); color: var(--primary); padding: 12px; border-radius: 15px; font-weight: bold; cursor: pointer; }
+        .export-btn { background: #f39c12; color: #fff; border: none; padding: 15px; border-radius: 15px; font-weight: bold; font-size: 1rem; cursor: pointer; }
+
+        /* 預覽與置中 */
+        #preview-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:10000; justify-content:center; align-items:center; flex-direction:column; padding:20px; }
+        #preview-img { max-width: 95%; max-height: 80%; border-radius: 15px; border: 2px solid #fff; }
+        .close-btn { margin-top: 20px; background: #fff; padding: 12px 60px; border-radius: 30px; font-weight: 900; border: none; }
     </style>
 </head>
 <body>
@@ -56,181 +56,168 @@
     <div class="card" id="main-card">
         <h2>RURU-tracker Pro</h2>
         
-        <div class="setup-area">
+        <div class="setup-area" id="config-panel">
             <div class="form-row">
-                <div class="group"><label>性別</label>
-                    <select id="gender"><option value="" selected disabled>請選擇</option><option value="female">女性</option><option value="male">男性</option></select>
-                </div>
-                <div class="group"><label>年齡</label>
-                    <input type="number" id="age" placeholder="歲數" inputmode="numeric">
-                </div>
+                <div class="group"><label>性別</label><select id="gender"><option value="" disabled selected>請選擇</option><option value="female">女性</option><option value="male">男性</option></select></div>
+                <div class="group"><label>年齡</label><input type="number" id="age" placeholder="歲數" inputmode="numeric"></div>
             </div>
             <div class="form-row">
-                <div class="group"><label>體重 (kg)</label>
-                    <input type="number" id="weight" placeholder="kg" inputmode="decimal">
-                </div>
-                <div class="group"><label>目前狀態</label>
-                    <select id="status"><option value="" selected disabled>請選擇</option>
-                        <option value="adult">一般成人</option><option value="weight_loss">減肥期間</option>
-                        <option value="high_temp">高溫工作</option><option value="chronic_disease">限水患者</option>
-                    </select>
-                </div>
+                <div class="group"><label>體重 (kg)</label><input type="number" id="weight" placeholder="kg" inputmode="decimal"></div>
+                <div class="group"><label>目前狀態</label><select id="status"><option value="" disabled selected>請選擇</option><option value="adult">一般成人</option><option value="weight_loss">減肥期間</option><option value="high_temp">高溫工作</option><option value="chronic_disease">限水患者</option></select></div>
             </div>
             <div class="form-row">
-                <div class="group"><label>每小時目標 (ml)</label>
-                    <input type="number" id="hourlyTarget" placeholder="自行填寫" inputmode="numeric">
-                </div>
+                <div class="group"><label>預設每杯 (ml)</label><input type="number" id="defaultCup" value="200" inputmode="numeric"></div>
+                <div class="group"><label>每小時目標 (ml)</label><input type="number" id="hGoal" placeholder="選填" inputmode="numeric"></div>
             </div>
-            <button onclick="startPlan()" style="width:100%; padding:15px; background:var(--primary); color:#fff; border:none; border-radius:12px; font-weight:bold; font-size:1.1rem; cursor:pointer;">開始今日計畫</button>
+            <button onclick="initPlan()" style="width:100%; padding:15px; background:var(--primary); color:#fff; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">開始今日計畫</button>
         </div>
 
         <div id="result-area">
             <div class="display-card">
-                <div style="font-size:0.8rem; color:var(--primary); font-weight:bold;">建議每日目標總量</div>
-                <span class="target-val" id="targetDisplay">--</span> <small style="font-weight:bold;">ml</small>
-                <div class="limit-info" id="limitDisplay">📈 健康上限：-- ml</div>
-                <div id="hourlyLabel" style="font-size: 0.75rem; color: #007bff; margin-top: 5px; font-weight: bold;"></div>
+                <div style="font-size:0.75rem; color:var(--primary); font-weight:bold;">建議每日目標</div>
+                <span class="target-val" id="vTarget">--</span> <small style="font-weight:bold;">ml</small>
+                <div class="limit-info" id="vLimit">📈 健康上限：-- ml</div>
+                <div id="vHGoal" style="font-size: 0.75rem; color: #007bff; margin-top: 5px; font-weight: bold;"></div>
             </div>
 
-            <div class="note-box" id="noteBox">💧 準備好啟動一天的代謝了嗎？</div>
+            <div class="note-box" id="vNote">💧 點擊水杯開始補水動畫。</div>
             <div class="cups-grid" id="cupsGrid"></div>
 
             <div class="btn-group">
-                <button class="add-btn" onclick="askCustomVolume()">＋ 手動新增水杯 (自定義 ml)</button>
-                <button class="export-btn" id="export-trigger" onclick="takeScreenshot()">📸 產生今日飲水成就圖</button>
+                <button class="add-btn" onclick="addCustom()">＋ 手動新增 (自由填寫 ml)</button>
+                <button class="export-btn" id="btn-cap" onclick="capture()">📸 產生今日飲水成就圖</button>
             </div>
 
             <div style="margin-top:20px; text-align:center;">
                 <span style="font-size:0.8rem; color:#666;">今日已累計：</span>
-                <span id="currentTotal" style="font-size:1.8rem; font-weight:900; color:#004085;">0</span> <small>ml</small>
+                <span id="vTotal" style="font-size:1.8rem; font-weight:900; color:#004085;">0</span> <small>ml</small>
             </div>
-
-            <div id="watermark" style="display:none; text-align:center; font-size:10px; color:#bbb; margin-top:15px; font-style: italic;">
-                Designed for RURU-prog | Focus on Healthy Habits
-            </div>
-            <div style="text-align:center; font-size:0.8rem; color:#ccc; text-decoration:underline; cursor:pointer; margin-top:15px;" onclick="resetAll()">重設今日紀錄</div>
+            <div id="wm" style="display:none; text-align:center; font-size:10px; color:#ccc; margin-top:15px;">Powered by RURU-prog</div>
+            <div style="text-align:center; font-size:0.75rem; color:#ddd; cursor:pointer; margin-top:10px;" onclick="reset()">重設紀錄</div>
         </div>
     </div>
 </div>
 
 <div id="preview-overlay">
-    <div class="preview-tip">✨ 飲水海報已置中產生</div>
+    <div style="color:#fff; margin-bottom:15px; font-weight:bold;">✨ 飲水成就圖（置中產生）</div>
     <img id="preview-img" src="">
-    <button class="close-btn" onclick="closePreview()">關閉</button>
+    <button class="close-btn" onclick="document.getElementById('preview-overlay').style.display='none'">關閉</button>
 </div>
 
 <script>
-    let appData = { cups: [], config: {} };
-    const KEY = 'RURU_V8_1';
+    let d = { cups: [], cfg: {} };
+    const K = 'RURU_V82';
 
-    function startPlan() {
-        const gender = document.getElementById('gender').value;
+    function initPlan() {
+        const gen = document.getElementById('gender').value;
         const age = parseInt(document.getElementById('age').value);
-        const weight = parseFloat(document.getElementById('weight').value);
-        const status = document.getElementById('status').value;
-        const hTarget = parseInt(document.getElementById('hourlyTarget').value) || 0;
+        const wet = parseFloat(document.getElementById('weight').value);
+        const sta = document.getElementById('status').value;
+        const dCup = parseInt(document.getElementById('defaultCup').value) || 200;
+        const hG = parseInt(document.getElementById('hGoal').value) || 0;
 
-        if (!gender || !age || !weight || !status) { alert("生理資料尚未填寫完整喔！"); return; }
+        if(!gen || !age || !wet || !sta) return alert("請完整填寫生理資料。");
 
-        let target = (status === 'chronic_disease') ? 1200 : (weight * (age >= 65 ? 30 : (gender === 'male' ? 35 : 30))) + (status === 'weight_loss' ? 500 : (status === 'high_temp' ? 800 : 0));
-        let limit = (status === 'chronic_disease') ? 1200 : (weight * 50) + (status === 'weight_loss' ? 500 : (status === 'high_temp' ? 800 : 0));
+        let tar = (sta==='chronic_disease')? 1200 : (wet*(age>=65?30:(gen==='male'?35:30))) + (sta==='weight_loss'?500:(sta==='high_temp'?800:0));
+        let lim = (sta==='chronic_disease')? 1200 : (wet*50) + (sta==='weight_loss'?500:(sta==='high_temp'?800:0));
 
-        appData.config = { target, limit, hTarget, date: new Date().toLocaleDateString() };
-        appData.cups = [];
-        
-        // 預設產生基礎水杯 (200ml)
-        let count = Math.ceil(target / 200);
-        for(let i=0; i<count; i++) appData.cups.push({ volume: 200, time: null });
+        d.cfg = { tar, lim, dCup, hG, date: new Date().toLocaleDateString() };
+        d.cups = [];
+        for(let i=0; i<Math.ceil(tar/dCup); i++) d.cups.push({ v: dCup, t: null });
 
-        renderCups();
+        render();
         document.getElementById('result-area').style.display = 'block';
-        updateUI();
+        update();
         save();
     }
 
-    function renderCups() {
-        const grid = document.getElementById('cupsGrid');
-        grid.innerHTML = '';
-        appData.cups.forEach((cup, i) => {
-            const item = document.createElement('div');
-            item.className = 'cup-item' + (cup.time ? ' done' : '');
-            item.onclick = () => toggleCup(i);
-            item.innerHTML = `
-                <div class="cup-glass"><div class="cup-water"></div></div>
-                <span class="cup-label">${cup.volume}ml</span>
-                <span class="cup-time">${cup.time || '--:--'}</span>
-            `;
-            grid.appendChild(item);
+    function render() {
+        const g = document.getElementById('cupsGrid');
+        g.innerHTML = '';
+        d.cups.forEach((c, i) => {
+            const div = document.createElement('div');
+            div.className = 'cup-item' + (c.t ? ' done' : '');
+            div.onclick = () => {
+                d.cups[i].t = d.cups[i].t ? null : new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:false});
+                render(); update(); save();
+            };
+            div.innerHTML = `<div class="cup-glass"><div class="cup-water"></div></div><span class="cup-label">${c.v}ml</span><div class="cup-time">${c.t || ''}</div>`;
+            g.appendChild(div);
         });
     }
 
-    function toggleCup(i) {
-        appData.cups[i].time = appData.cups[i].time ? null : new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false});
-        renderCups();
-        updateUI();
-        save();
-    }
-
-    function askCustomVolume() {
-        let vol = prompt("請輸入這杯水的容量 (ml):", "200");
-        if (vol && !isNaN(vol)) {
-            appData.cups.push({ volume: parseInt(vol), time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false}) });
-            renderCups();
-            updateUI();
-            save();
+    function addCustom() {
+        let v = prompt("輸入容量 (ml):", "200");
+        if(v && !isNaN(v)) {
+            d.cups.push({ v: parseInt(v), t: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:false}) });
+            render(); update(); save();
         }
     }
 
-    function updateUI() {
-        let total = appData.cups.reduce((s, c) => s + (c.time ? c.volume : 0), 0);
-        document.getElementById('targetDisplay').innerText = Math.round(appData.config.target);
-        document.getElementById('limitDisplay').innerText = `📈 健康上限：${Math.round(appData.config.limit)} ml`;
-        document.getElementById('currentTotal').innerText = total;
-        document.getElementById('hourlyLabel').innerText = appData.config.hTarget ? `⏰ 每小時目標：${appData.config.hTarget} ml` : "";
-
-        const limitEl = document.getElementById('limitDisplay');
-        const noteEl = document.getElementById('noteBox');
+    function update() {
+        let ttl = d.cups.reduce((s, c) => s + (c.t ? c.v : 0), 0);
+        document.getElementById('vTarget').innerText = Math.round(d.cfg.tar);
+        document.getElementById('vLimit').innerText = `📈 健康上限：${Math.round(d.cfg.lim)} ml`;
+        document.getElementById('vTotal').innerText = ttl;
+        document.getElementById('vHGoal').innerText = d.cfg.hG ? `⏰ 每小時目標：${d.cfg.hG} ml` : "";
         
-        if (total > appData.config.limit) {
-            limitEl.className = "limit-info over";
-            noteEl.innerHTML = "⚠️ <b>警示：過量飲水！</b><br>已超過今日健康上限，請稍作休息。";
-        } else if (total >= appData.config.target) {
-            noteEl.innerHTML = "🎉 <b>恭喜達標！</b><br>今天的身體運作效率非常出色！";
-            if(!window.cDone) { confetti({particleCount:150, spread:70, origin:{y:0.6}}); window.cDone=true; }
+        const n = document.getElementById('vNote');
+        if(ttl > d.cfg.lim) {
+            n.innerHTML = "⚠️ <b>過量警示！</b>請停止補水。";
+            document.getElementById('vLimit').className = "limit-info over";
+        } else if(ttl >= d.cfg.tar) {
+            n.innerHTML = "🎉 <b>目標達成！</b>身體充滿活力。";
+            document.getElementById('vLimit').className = "limit-info";
+            if(!window.conf) { confetti({particleCount:150, spread:70, origin:{y:0.6}}); window.conf=true; }
         } else {
-            window.cDone = false;
-            noteEl.innerHTML = "💧 <b>規律補水中...</b><br>看著水杯填滿，感受代謝的啟動。";
+            n.innerHTML = "💧 <b>穩定節奏...</b> 感受水分緩緩填滿。";
+            document.getElementById('vLimit').className = "limit-info";
+            window.conf = false;
         }
     }
 
-    function takeScreenshot() {
+    function capture() {
         const target = document.getElementById('main-card');
-        const exportBtn = document.getElementById('export-trigger');
-        const watermark = document.getElementById('watermark');
+        const btn = document.getElementById('btn-cap');
+        const wm = document.getElementById('wm');
+        
+        btn.style.visibility = 'hidden';
+        wm.style.display = 'block';
 
-        exportBtn.style.opacity = '0'; // 隱藏按鈕但不影響佈局
-        watermark.style.display = 'block';
-
-        html2canvas(target, { scale: 2, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
-            document.getElementById('preview-img').src = canvas.toDataURL("image/jpeg", 0.95);
-            document.getElementById('preview-overlay').style.display = 'flex';
-            exportBtn.style.opacity = '1';
-            watermark.style.display = 'none';
-        });
+        // 穩定器：強制等待渲染並解除動畫
+        setTimeout(() => {
+            html2canvas(target, { 
+                scale: 2, 
+                useCORS: true, 
+                backgroundColor: "#ffffff",
+                logging: false,
+                onclone: (clonedDoc) => {
+                    // 在複製的 DOM 中確保水杯是滿的且沒有動畫，防止渲染失敗
+                    clonedDoc.querySelectorAll('.cup-water').forEach(w => w.style.transition = 'none');
+                }
+            }).then(canvas => {
+                document.getElementById('preview-img').src = canvas.toDataURL("image/jpeg", 0.9);
+                document.getElementById('preview-overlay').style.display = 'flex';
+                btn.style.visibility = 'visible';
+                wm.style.display = 'none';
+            }).catch(() => {
+                alert("製圖失敗！請試著重新整理網頁，或確認瀏覽器權限。");
+                btn.style.visibility = 'visible';
+                wm.style.display = 'none';
+            });
+        }, 300);
     }
 
-    function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; }
-    function save() { localStorage.setItem(KEY, JSON.stringify(appData)); }
-    function resetAll() { if(confirm("確定重設今日紀錄？")) { localStorage.removeItem(KEY); location.reload(); } }
+    function save() { localStorage.setItem(K, JSON.stringify(d)); }
+    function reset() { if(confirm("重設所有紀錄？")) { localStorage.removeItem(K); location.reload(); } }
 
-    const saved = localStorage.getItem(KEY);
-    if(saved) {
-        const d = JSON.parse(saved);
-        if(d.config.date === new Date().toLocaleDateString()) {
-            appData = d;
+    const s = localStorage.getItem(K);
+    if(s) {
+        const p = JSON.parse(s);
+        if(p.cfg.date === new Date().toLocaleDateString()) {
+            d = p;
             document.getElementById('result-area').style.display = 'block';
-            renderCups();
-            updateUI();
+            render(); update();
         }
     }
 </script>
